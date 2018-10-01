@@ -23,7 +23,7 @@ public class SimpleCORSFilter implements Filter {
 		// * 을 내가 허용하고 싶은 특정 도메인으로 바꾸면 설정한 도메인에 한에서만 크로스 도메인을 허용하게 된다. 여러 도메인의 경우 여러번 설정하면된다.
 		response.setHeader("Access-Control-Allow-Origin", "*");
 		
-		chain.doFilter(req, res);
+		chain.doFilter(req, res); 
 	}
 	
 	public void init(FilterConfig filterConfig) {}
