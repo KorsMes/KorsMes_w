@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="mes.kors.web.mapper.ApiMapper">
+	
+	<!-- 구매단가발행 조회 -->
+	<select id = "paf06_list" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.COMPANY,   
+			        A.ITNBR,   
+			        A.NAME ITEM_NAME_K,   
+			        A.SPEC1 NORM1,   
+			        A.UNMSR PUR_UM,   
+			        B.CURRENCY,   
+			        B.VENDOR,  
+			        SF_BUYER_NM(B.VENDOR) VENDOR_NAME,     
+			        B.SUPPLY,   
+			        B.TEMP_PRICE,   
+			        B.PAST_PRICE,   
+			        B.LAST_PRICE,
+			        TO_CHAR(B.START_DATE, 'yyyy-mm-dd') START_DATE
+		FROM SALE.SAB01_MST A, PAF03_MST B
+		WHERE B.COMPANY = #{company_cd} 
+		<if test = "itnbr != null">
+		    AND    B.ITEM >= #{itnbr}
+		</if> 
+		<if test = "by_cd != null">
+		    AND  (B.VENDOR  = #{by_cd} OR #{by_cd} = '*')
+	    </if>
+		    AND  A.COMPANY = B.COMPANY
+		    AND    A.ITNBR = B.ITEM 
+		ORDER BY A.itnbr
+	</select>
+	
+	
+</mapper>	

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="mes.kors.web.mapper.ComponentMapper">
+
+	
+	<!-- 
+		SELECT BOX
+	 -->
+	
+	<!-- 품목형태 정보 조회 -->
+	<select id = "getIform" resultType="hashmap">
+		<![CDATA[
+			SELECT 	CODE as iform,
+			         	NAME1 as iform_nm  
+			FROM SAA01_MST
+			WHERE SYS_CD = 'S'
+				AND GROUP_CD = 'Y6'
+				AND CODE <> '*'
+				AND SUBSTR(CODE,1,1) = 'A'
+				AND use  = 'Y'
+			ORDER BY CODE ASC
+		]]>
+	</select>
+	
+	
+	<!-- 상태 정보 조회 -->
+	<select id = "getStatus" resultType="hashmap">
+		SELECT  CODE STATUS_CD,   
+		        	NAME1 STATUS_NM 
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		    AND GROUP_CD = 'Y7'
+<![CDATA[		    AND CODE <> '*' ]]>
+		    AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	
+	<!-- 제품군 정보 조회 -->
+	<select id = "getItcls" resultType="hashmap">
+		SELECT  CODE ITCLS_CD,   
+		        	NAME1 ITCLS_NM  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'N0'
+<![CDATA[		AND CODE <> '*' ]]>
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 내외자구분 정보 조회 -->
+	<select id = "getMccod" resultType="hashmap">
+		SELECT  CODE MCCOD_CD,   
+		        	NAME1 MCCOD_NM 
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'Y1'
+<![CDATA[		AND CODE <> '*' ]]>
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 품목형태 정보 조회 -->
+	<select id = "getItemtype" resultType="hashmap">
+		SELECT  CODE ITEMTYPE_CD,   
+		        	NAME1 ITEMTYPE_NM 
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'Y6'
+<![CDATA[		AND CODE <> '*' ]]>
+		AND SUBSTR(CODE,1,1) = 'A'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+</mapper>	

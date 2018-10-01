@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+	PUBLIC "-//mybatis.org/DTD Config 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-config.dtd">
+	
+<configuration>
+	<typeHandlers>
+		<typeHandler handler="org.apache.ibatis.type.SqlDateTypeHandler" javaType="java.sql.Date" jdbcType="DATE"/>
+	</typeHandlers>
+	
+	<mappers>
+		<mapper resource="mes/kors/web/mapper/ApiMapper.xml"/>
+		<mapper resource="mes/kors/web/mapper/CommonMapper.xml"/>
+		<mapper resource="mes/kors/web/mapper/ComponentMapper.xml"/>
+		<mapper resource="mes/kors/web/mapper/PopupMapper.xml"/>
+	</mappers>
+</configuration>	
