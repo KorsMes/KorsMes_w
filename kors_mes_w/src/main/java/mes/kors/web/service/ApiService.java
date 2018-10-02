@@ -24,5 +24,80 @@ public class ApiService {
 		return apiDao.paf06_list(map);
 	}
 	
+	//지출내역발행 조회
+	public List<Map<String, Object>> pda12_list(Map<String, Object> map){
+		return apiDao.pda12_list(map);
+	}
+
+	//견적서 발행(을지)
+	public List<Map<String, Object>> scb10_list(Map<String, Object> map){
+		return apiDao.scb10_list(map);
+	}
+	
+	//PJT 수주내역 조회 (상세) 조회
+	public List<Map<String, Object>> sea12_list1(Map<String, Object> map){
+		return apiDao.sea12_list1(map);
+	}
+
+	//PJT 수주내역 조회 (업체별) 조회
+	public List<Map<String, Object>> sea12_list2(Map<String, Object> map){
+		return apiDao.sea12_list2(map);
+	}
+	
+	//PJT 수주내역 조회 (부서별) 조회
+	public List<Map<String, Object>> sea12_list3(Map<String, Object> map){
+		return apiDao.sea12_list3(map);
+	}
+	
+	//매출내역 종합현황(상세현황) 조회
+	public List<Map<String, Object>> sfa05_list1(Map<String, Object> map){
+		return apiDao.sfa05_list1(map);
+	}
+	
+	//매출내역 종합현황(거래처별) 조회
+	public List<Map<String, Object>> sfa05_list2(Map<String, Object> map){
+		return apiDao.sfa05_list2(map);
+	}
+	
+	//매출내역 종합현황(부서별) 조회
+	public List<Map<String, Object>> sfa05_list3(Map<String, Object> map){
+		return apiDao.sfa05_list3(map);
+	}
+	
+	//수금내역 종합현황(상세현황) 조회
+	public List<Map<String, Object>> shb04_list1(Map<String, Object> map){
+		return apiDao.shb04_list1(map);
+	}
+	
+	//수금내역 종합현황(거래처별) 조회
+	public List<Map<String, Object>> shb04_list2(Map<String, Object> map){
+		return apiDao.shb04_list2(map);
+	}
+	
+	//수금내역 종합현황(부서별) 조회
+	public List<Map<String, Object>> shb04_list3(Map<String, Object> map){
+		return apiDao.shb04_list3(map);
+	}
+	
+	//목표기초원가 발행(자재투입 계획서(갑지))
+	public List<Map<String, Object>> pdh04_list1(Map<String, Object> map){
+		return apiDao.pdh04_list1(map);
+	}
+	
+	//목표기초원가 발행(자재투입 계획서(을지))
+	public List<Map<String, Object>> pdh04_list2(Map<String, Object> map){
+		return apiDao.pdh04_list2(map);
+	}
+	
+	//월별 수입검사현황 조회
+	public List<Map<String, Object>> pha03_list(Map<String, Object> map){
+		return apiDao.pha03_list(map);
+	}
+	
+	//검사 불량현황 발행 조회
+	public List<Map<String, Object>> phb04_list(Map<String, Object> map){
+		return apiDao.phb04_list(map);
+	}
+	
 	
 }
