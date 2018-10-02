@@ -182,9 +182,9 @@
 		SELECT  SCA09_MST.PJTNO,
 			        SCA09_MST.PJTNM,
 			        SCA09_MST.CVCOD,
-			        SCA09_MST.SODAT,
+			        TO_CHAR(SCA09_MST.SODAT, 'YYYY-MM-DD') SODAT,
 			        SCA09_MST.PJAMT,
-			        SCA09_MST.NADAT,
+			        TO_CHAR(SCA09_MST.NADAT, 'YYYY-MM-DD') NADAT,
 			        SCA09_MST.ITGRP,
 			        SCA09_MST.DPTNO,
 			        SCA09_MST.EPNO,
@@ -195,7 +195,7 @@
 			        SCA09_DTL.PJQTY,
 			        SCA09_DTL.PJUNP,
 			        SCA09_DTL.PJAMT,
-			        SCA09_DTL.PJNAD,
+			        TO_CHAR(SCA09_DTL.PJNAD, 'YYYY-MM-DD') PJNAD,
 			        (SELECT NAME
 			         FROM SALE.SAB03_MST
 			         WHERE COMPANY = SCA09_DTL.COMPANY
@@ -203,8 +203,8 @@
 		FROM SCA09_MST, SCA09_DTL
 		WHERE SCA09_MST.COMPANY = #{company_cd}
 		AND SCA09_MST.PLANT = #{plant_cd}
-		<if test = "date_fr != null and date_fr != '' and date_to != null date_to != ''">
-			AND SCA09_MST.SODAT BETWEEN #{date_fr} AND #{date_to}
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND SCA09_MST.SODAT BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
 		</if>
 		<if test = "cust_cd != null and cust_cd != ''">
 			AND SCA09_MST.CVCOD LIKE #{cust_cd} || '%'
@@ -215,7 +215,7 @@
 		<if test = "opt != null and opt != ''">
 			AND ((#{opt} = 'A') OR 
 			     (#{opt} = 'N' AND SCA09_MST.STATUS = 'A0') OR 
-			     (#{opt} = 'Y' AND SCA09_MST.STATUS != 'A0'))
+			     (#{opt} = 'Y' AND SCA09_MST.STATUS <![CDATA[ <> ]]> 'A0')) 
 	     </if>
 		AND SCA09_MST.COMPANY = SCA09_DTL.COMPANY
 		AND SCA09_MST.PLANT = SCA09_DTL.PLANT
@@ -231,12 +231,20 @@
 		FROM SCA09_MST, SCA09_DTL
 		WHERE SCA09_MST.COMPANY = #{company_cd}
 		AND SCA09_MST.PLANT = #{plant_cd}
-		AND SCA09_MST.SODAT BETWEEN #{date_fr} AND #{date_to}
-		AND SCA09_MST.CVCOD LIKE #{cust_cd} || '%'
-		AND SCA09_MST.DPTNO LIKE #{dept_cd} || '%'
-		AND (   (#{opt} = 'A') OR 
-		        (#{opt} = 'N' AND SCA09_MST.STATUS = 'A0') OR 
-		        (#{opt} = 'Y' AND SCA09_MST.STATUS != 'A0')   )
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND SCA09_MST.SODAT BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		</if>
+		<if test = "cust_cd != null and cust_cd != ''">
+			AND SCA09_MST.CVCOD LIKE #{cust_cd} || '%'
+		</if>
+		<if test = "dept_cd != null and dept_cd != ''">
+			AND SCA09_MST.DPTNO LIKE #{dept_cd} || '%'
+		</if>
+		<if test = "opt != null and opt != ''">
+			AND (   (#{opt} = 'A') OR 
+			        (#{opt} = 'N' AND SCA09_MST.STATUS = 'A0') OR 
+			        (#{opt} = 'Y' AND SCA09_MST.STATUS <![CDATA[ <> ]]> 'A0')   ) 
+        </if>
 		AND SCA09_MST.COMPANY = SCA09_DTL.COMPANY
 		AND SCA09_MST.PLANT = SCA09_DTL.PLANT
 		AND SCA09_MST.PJTNO = SCA09_DTL.PJTNO
@@ -253,12 +261,20 @@
 		FROM SCA09_MST, SCA09_DTL
 		WHERE SCA09_MST.COMPANY = #{company_cd}
 		AND SCA09_MST.PLANT = #{plant_cd}
-		AND SCA09_MST.SODAT BETWEEN #{date_fr} AND #{date_to}
-		AND SCA09_MST.CVCOD LIKE #{cust_cd} || '%'
-		AND SCA09_MST.DPTNO LIKE #{dept_no} || '%'
-		AND ((#{opt} = 'A') OR 
-		(#{opt} = 'N' AND SCA09_MST.STATUS = 'A0') OR 
-		(#{opt} = 'Y' AND SCA09_MST.STATUS != 'A0'))
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND SCA09_MST.SODAT BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		</if>
+		<if test = "cust_cd != null and cust_cd != ''">
+			AND SCA09_MST.CVCOD LIKE #{cust_cd} || '%'
+		</if>
+		<if test = "dept_cd != null and dept_cd != ''">
+			AND SCA09_MST.DPTNO LIKE #{dept_cd} || '%'
+		</if>
+		<if test = "opt != null and opt != ''">
+			AND (   (#{opt} = 'A') OR 
+			        (#{opt} = 'N' AND SCA09_MST.STATUS = 'A0') OR 
+			        (#{opt} = 'Y' AND SCA09_MST.STATUS <![CDATA[ <> ]]> 'A0')   )
+        </if>
 		AND SCA09_MST.COMPANY = SCA09_DTL.COMPANY
 		AND SCA09_MST.PLANT = SCA09_DTL.PLANT
 		AND SCA09_MST.PJTNO = SCA09_DTL.PJTNO
@@ -276,7 +292,7 @@
 			        A.DPTNO,    
 			        A.ITGRP,    
 			        A.ORDNO PJTNO,
-			        A.JDATA,
+			        TO_CHAR(A.JDATA, 'YYYY-MM-DD') JDATA,
 			        B.PJTNM,
 			        NVL(B.PJAMT,0) PJAMT,
 			        NVL(B.MAAMT,0) MAAMT,     
@@ -292,12 +308,18 @@
 		WHERE A.COMPANY = #{company_cd}
 		AND A.PLANT = #{plant_cd}
 		AND A.GUBUN = '20'
-		AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
-		AND A.DPTNO LIKE #{dptno} || '%'
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
+		</if>
+		<if test = "dptno != null and dptno != ''">
+			AND A.DPTNO LIKE #{dptno} || '%'
+		</if>
 		AND B.COMPANY = A.COMPANY
 		AND B.PLANT = A.PLANT
 		AND B.PJTNO = A.ORDNO
-		AND B.CVCOD LIKE #{cust_cd} || '%'
+		<if test = "cust_cd != null and cust_cd != ''">
+			AND B.CVCOD LIKE #{cust_cd} || '%'
+		</if>
 		ORDER BY substr(A.ORDNO,3,6), B.CVCOD, A.JDATA, A.JUPO1, A.JUPO2
 	</select>
 	
@@ -321,12 +343,18 @@
 		        WHERE A.COMPANY = #{company_cd}
 		        AND A.PLANT = #{plant_cd}
 		        AND A.GUBUN = '20'
+		        <if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
 		        AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
+		        </if>
+		        <if test = "dptno != null and dptno != ''">
 		        AND A.DPTNO LIKE #{dptno} || '%'
+		        </if>
 		        AND B.COMPANY = A.COMPANY
 		        AND B.PLANT = A.PLANT
 		        AND B.PJTNO = A.ORDNO
+		        <if test = "cust_cd != null and cust_cd != ''">
 		        AND B.CVCOD LIKE #{cust_cd} || '%'
+		        </if>
 		        GROUP BY B.CVCOD, A.ITGRP, A.ORDNO, B.PJTNM, A.GLITN    )
 		GROUP BY CVCOD
 		ORDER BY CVCOD
@@ -344,12 +372,18 @@
 		WHERE A.COMPANY = #{company_cd}
 		AND A.PLANT = #{plant_cd}
 		AND A.GUBUN = '20'
-		AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
-		AND A.DPTNO LIKE #{dptno} || '%'
-		AND B.COMPANY = A.COMPANY
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
+		</if>
+		<if test = "dptno != null and dptno != ''">
+			AND A.DPTNO LIKE #{dptno} || '%'
+		</if>
+			AND B.COMPANY = A.COMPANY
 		AND B.PLANT = A.PLANT
 		AND B.PJTNO = A.ORDNO
-		AND B.CVCOD LIKE #{cust_cd} || '%'
+		<if test = "cust_cd != null and cust_cd != ''">
+			AND B.CVCOD LIKE #{cust_cd} || '%'
+		</if>
 		GROUP BY A.DPTNO, A.EMPNO
 		ORDER BY A.DPTNO, A.EMPNO
 	</select>
@@ -970,7 +1004,7 @@
 		WHERE B.COMPANY = #{company_cd}
 		AND B.PLANT         = #{plant_cd} 
 		<if test = "insp_date_fr != null and insp_date_fr != '' and insp_date_to != null and insp_date_to != ''">
-			AND B.INSP_DATE BETWEEN  TO_DATE(#{insp_date_fr}) AND TO_DATE(#{insp_date_to}) 
+			AND B.INSP_DATE BETWEEN  REPLACE(substr(#{insp_date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{insp_date_to}, 1, 10), '-', '') 
 		</if>
 		<if test = "item1 != null and item1 != '' and item2 != null and item2 != ''">
 			AND A.ITEM BETWEEN  #{item1} AND #{item2}
