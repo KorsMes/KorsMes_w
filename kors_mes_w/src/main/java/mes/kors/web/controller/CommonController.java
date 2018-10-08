@@ -37,9 +37,6 @@ public class CommonController {
 	//로그인 정보 조회
 	@RequestMapping("/common/doLogin")
 	public void getUserInfo(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
-		/*Map<String, Object> map = new HashMap<>();
-		map.put("id", "212001");
-		map.put("pw", "1");*/
 		map = common1(request, response, map);
 		List<Map<String, Object>> list = commonService.getUserInfo(map);
 		common2(response, list);
@@ -54,6 +51,21 @@ public class CommonController {
 		common2(response, list);
 	}
 	
+	//공통코드 : 회사정보 
+	@RequestMapping("/common/getCompanyInfo")
+	public void getCompanyInfo(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = commonService.getCompanyInfo(map);
+		common2(response, list);
+	}
+	
+	//공통코드 : 공장정보 
+	@RequestMapping("/common/getPlantInfo")
+	public void getPlantInfo(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = commonService.getPlantInfo(map);
+		common2(response, list);
+	}
 	
 	
 	

@@ -56,7 +56,7 @@ public class PopupController {
 	@RequestMapping("/common/popup/dept_list")
 	public void dept_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
 		map = common1(request, response, map);
-		List<Map<String, Object>> list = popupService.dept_list();
+		List<Map<String, Object>> list = popupService.dept_list(map);
 		common2(response, list);
 	}
 	
@@ -105,7 +105,7 @@ public class PopupController {
 	@RequestMapping("/common/popup/task_list")
 	public void task_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
 		map = common1(request, response, map);
-		List<Map<String, Object>> list = popupService.task_list();
+		List<Map<String, Object>> list = popupService.task_list(map);
 		common2(response, list);
 	}
 	

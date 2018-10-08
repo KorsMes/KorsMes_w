@@ -26,5 +26,14 @@ public class CommonService {
 	public List<Map<String, Object>> getMenuAuth(Map<String, Object> map){
 		return commonDao.getMenuAuth(map);
 	}
-
+	
+	//공통코드 : 회사정보
+	public List<Map<String, Object>> getCompanyInfo(Map<String, Object> map){
+		return commonDao.getCompanyInfo(map);
+	}
+	
+	//공통코드 : 공장정보 
+	public List<Map<String, Object>> getPlantInfo(Map<String, Object> map){
+		return commonDao.getPlantInfo(map);
+	}
 }

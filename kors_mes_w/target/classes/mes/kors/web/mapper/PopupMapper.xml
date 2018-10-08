@@ -235,13 +235,13 @@
 		   	AND A.PLANT   = #{plant_cd}
 		   	AND A.STATUS >= 'E0'
 			AND A.PDTNO	IN	(	SELECT	DISTINCT MO_NO
-										FROM		PHB01_MST
-										WHERE		COMPANY	=	A.COMPANY
-											AND		PLANT		=	A.PLANT
+										FROM PHB01_MST
+										WHERE COMPANY	=	A.COMPANY
+											AND PLANT =	A.PLANT
 											<if test="ym_fr != null and ym_fr != '' and ym_to != null and ym_to != ''">
-												AND		QC_DATE BETWEEN REPLACE(substr(#{ym_fr}, 1, 10), '-', '') AND REPLACE(substr(#{ym_to}, 1, 10), '-', '')
+												AND QC_DATE BETWEEN REPLACE(substr(#{ym_fr}, 1, 10), '-', '') AND REPLACE(substr(#{ym_to}, 1, 10), '-', '')
 											</if>
-											AND		STATUS	=	'60'	)
+											AND STATUS =	'60' )
 		ORDER BY A.PDTNO
 	</select>
 	

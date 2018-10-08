@@ -35,22 +35,22 @@
 	
 	<!-- 지출내역발행 조회 -->
 	<select id = "pda12_list" parameterType="hashmap" resultType="hashmap">
-		SELECT  B.CMPY_CD
-			        ,B.ACT_UNIT
-			        ,B.DRF_DATE
-			        ,B.DRF_SEQ            
-			        ,B.SEQ
-			        ,B.EXP_DATE       
-			        ,B.AC_CD 
-			        ,B.AMT
-			        ,B.CUST_CD          
-			        ,B.CUST_NM          
-			        ,B.PRO_FLAG     
-			        ,B.EXP_REMARKS    
-			        ,B.REMARKS   
-			        ,C.DEPT_ID
-			        ,A.SABN
-		FROM PDA10_MST A, PDA10_DTL B, SW_USER C
+		SELECT  B.CMPY_CD,
+					B.ACT_UNIT,
+			        TO_CHAR(B.DRF_DATE, 'YYYY-MM-DD') DRF_DATE,
+			        B.DRF_SEQ,          
+			        B.SEQ,
+			        TO_CHAR(B.EXP_DATE, 'YYYY-MM-DD') EXP_DATE,
+			        B.AC_CD, 
+			        B.AMT,
+			        B.CUST_CD,          
+			        B.CUST_NM,          
+			        B.PRO_FLAG,     
+			        B.EXP_REMARKS,   
+			        B.REMARKS,   
+			        C.DEPT_ID,
+			        A.SABN
+		FROM PROD.PDA10_MST A, PROD.PDA10_DTL B, SW_USER C
 		WHERE A.SABN = C.USER_ID
 		AND A.CMPY_CD = B.CMPY_CD
 		AND A.ACT_UNIT = B.ACT_UNIT
@@ -63,7 +63,7 @@
 			AND A.ACT_UNIT = #{act_unit}
 		</if>
 		<if test = "drf_date_fr != null and drf_date_fr != '' and drf_date_to != null and drf_date_to != ''">
-			AND A.DRF_DATE BETWEEN #{drf_date_fr} AND #{drf_date_to}
+			AND A.DRF_DATE BETWEEN REPLACE(substr(#{drf_date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{drf_date_to}, 1, 10), '-', '')
 		</if>
 		<if test = "sabn != null and sabn != ''">
 			AND A.SABN LIKE #{sabn}||'%'
@@ -122,39 +122,39 @@
 		                A.COMPANY
 		        FROM (  SELECT GRPNO, ITNBR, ITDSC, SOQTY1, SOWPRC1_CONFIRM SOWPRC1, PJTNO, COMPANY
 		                FROM SCA02_MST
-		                WHERE COMPANY = #{company_cd} AND
+		                WHERE COMPANY = #{company_cd} 
 		                <if test = "pjtno != null and pjtno != ''">
-		                	PJTNO = #{pjtno} AND
+		                	AND PJTNO = #{pjtno} 
 		                </if>
-		                GU0 = '1'
+		                AND GU0 = '1'
 		             ) A,
 		     ( SELECT GRPNO, PNLNO, ITNBR, ITDSC, SOQTY1, SOWPRC1_CONFIRM SOWPRC1, SOWAMT1, COMPANY
 		        FROM SCA02_MST
-		        WHERE COMPANY = #{company_cd}  AND
+		        WHERE COMPANY = #{company_cd}  
 		        	<if test = "pjtno != null and pjtno != ''">
-		              PJTNO = #{pjtno} AND
+		              AND PJTNO = #{pjtno} 
 		            </if>
-		              GU0 = '2' AND
-		              SUBSTR(ITNBR, 1, 1) != 'M'
+		              AND GU0 = '2' 
+		              AND SUBSTR(ITNBR, 1, 1) != 'M'
 		       UNION ALL
 		       SELECT B1.GRPNO, B1.PNLNO, B2.ITNBR, B2.ITDSC, B2.SOQTY1, 0, B1.SOWAMT1, B1.COMPANY
 		        FROM ( SELECT GRPNO, MIN(PNLNO) AS PNLNO, SUM(SOWAMT1) AS SOWAMT1, COMPANY
 		                FROM SCA02_MST
-		                WHERE COMPANY = #{company_cd} AND
+		                WHERE COMPANY = #{company_cd} 
 		                	<if test = "pjtno != null and pjtno != ''">
-		                      PJTNO = #{pjtno} AND
+		                      AND PJTNO = #{pjtno} 
 		                    </if>
-		                      GU0 = '2' AND
-		                      SUBSTR(ITNBR, 1, 1) = 'M'
+		                      AND GU0 = '2' 
+		                      AND SUBSTR(ITNBR, 1, 1) = 'M'
 		                GROUP BY GRPNO, COMPANY ) B1,
 		                SCA02_MST B2
-		        WHERE B2.COMPANY = #{company_cd}  AND
+		        WHERE B2.COMPANY = #{company_cd}  
 		        	<if test = "pjtno != null and pjtno != ''">
-		              B2.PJTNO = #{pjtno} AND
+		              AND B2.PJTNO = #{pjtno} 
 	              	</if>
-		              B1.GRPNO = B2.GRPNO AND
-		              B1.PNLNO = B2.PNLNO AND
-		              B2.ITMNO = 0 ) B
+		              AND B1.GRPNO = B2.GRPNO 
+		              AND B1.PNLNO = B2.PNLNO 
+		              AND B2.ITMNO = 0 ) B
 		WHERE A.GRPNO = B.GRPNO
 		UNION ALL
 		SELECT  GRPNO, 
@@ -168,11 +168,11 @@
 		        PJTNO, 
 		        COMPANY
 		FROM SCA02_MST
-		WHERE COMPANY = #{company_cd} AND
+		WHERE COMPANY = #{company_cd} 
 		<if test = "pjtno != null and pjtno != ''">
-			PJTNO = #{pjtno} AND
+			AND PJTNO = #{pjtno} 
 		</if>
-		GU0 = '1' )
+		AND GU0 = '1' )
 		)
 		ORDER BY GRPNO, PNLNO
 	</select>
@@ -202,7 +202,9 @@
 			           AND ITNBR = SCA09_DTL.ITNBR) ITNBR_DESC
 		FROM SCA09_MST, SCA09_DTL
 		WHERE SCA09_MST.COMPANY = #{company_cd}
-		AND SCA09_MST.PLANT = #{plant_cd}
+		<if test = "plant_cd != null and plant_cd != ''">
+			AND SCA09_MST.PLANT = #{plant_cd}
+		</if>
 		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
 			AND SCA09_MST.SODAT BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
 		</if>
@@ -309,7 +311,7 @@
 		AND A.PLANT = #{plant_cd}
 		AND A.GUBUN = '20'
 		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
-			AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
+			AND A.JDATA BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
 		</if>
 		<if test = "dptno != null and dptno != ''">
 			AND A.DPTNO LIKE #{dptno} || '%'
@@ -344,7 +346,7 @@
 		        AND A.PLANT = #{plant_cd}
 		        AND A.GUBUN = '20'
 		        <if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
-		        AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
+		        	AND A.JDATA BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
 		        </if>
 		        <if test = "dptno != null and dptno != ''">
 		        AND A.DPTNO LIKE #{dptno} || '%'
@@ -373,7 +375,7 @@
 		AND A.PLANT = #{plant_cd}
 		AND A.GUBUN = '20'
 		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
-			AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
+			AND A.JDATA BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
 		</if>
 		<if test = "dptno != null and dptno != ''">
 			AND A.DPTNO LIKE #{dptno} || '%'
@@ -416,17 +418,23 @@
 			        A.TRTAT,
 			        A.MADAT,
 			        A.JIOUT,
-			        A.BALIN,
+			        A.BALIN
 		FROM SCA09_MST B, SFA03_MST A
 		WHERE A.COMPANY = #{company_cd}
 		AND A.PLANT = #{plant_cd}
 		AND A.GUBUN = '30'
-		AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
-		AND A.DPTNO LIKE #{dptno} || '%'
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND A.JDATA BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		</if>
+		<if test = "dptno != null and dptno != ''">
+			AND A.DPTNO LIKE #{dptno} || '%'
+		</if>
 		AND B.COMPANY = A.COMPANY
 		AND B.PLANT = A.PLANT
 		AND B.PJTNO = A.ORDNO
-		AND B.CVCOD LIKE #{cust_cd} || '%'
+		<if test = "cust_cd != null and cust_cd != ''">
+			AND B.CVCOD LIKE #{cust_cd} || '%'
+		</if>
 		ORDER BY substr(A.ORDNO,3,6), B.CVCOD, A.JDATA, A.JUPO1, A.JUPO2, A.SEQ
 	</select>
 	
@@ -438,15 +446,22 @@
 			        SUM(NVL(DECODE(A.TRCAS, 'B2', NVL(A.PRAMT,0), 0),0)) BILL_AMT,
 			        SUM(NVL(A.TAVAT,0)) VAT
 		FROM SCA09_MST B, SFA03_MST A
+		
 		WHERE A.COMPANY = #{company_cd}
 		AND A.PLANT = #{plant_cd}
 		AND A.GUBUN = '30'
-		AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
-		AND A.DPTNO LIKE #{dptno} || '%'   
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND A.JDATA BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		</if>
+		<if test = "dptno != null and dptno != ''">
+			AND A.DPTNO LIKE #{dptno} || '%'   
+		</if>
 		AND B.COMPANY = A.COMPANY
 		AND B.PLANT = A.PLANT
 		AND B.PJTNO = A.ORDNO
-		AND B.CVCOD LIKE #{cust_cd} || '%'
+		<if test = "cust_cd != null and cust_cd != ''">
+			AND B.CVCOD LIKE #{cust_cd} || '%'
+		</if>
 		GROUP BY B.CVCOD
 	</select>
 	
@@ -462,12 +477,18 @@
 		WHERE A.COMPANY = #{company_cd}
 		AND A.PLANT = #{plant_cd}
 		AND A.GUBUN = '30'
-		AND A.JDATA BETWEEN #{date_fr} AND #{date_to}
-		AND A.DPTNO LIKE #{dptno} || '%'   
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND A.JDATA BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		</if>
+		<if test = "dptno != null and dptno != ''">
+			AND A.DPTNO LIKE #{dptno} || '%'   
+		</if>
 		AND B.COMPANY = A.COMPANY
 		AND B.PLANT = A.PLANT
 		AND B.PJTNO = A.ORDNO
-		AND B.CVCOD LIKE #{cust_cd} || '%'
+		<if test = "cust_cd != null and cust_cd != ''">
+			AND B.CVCOD LIKE #{cust_cd} || '%'
+		</if>
 		GROUP BY A.DPTNO, A.EMPNO
 	</select>
 	
@@ -986,6 +1007,95 @@
 		]]>
 	</select>
 	
+	<!-- 월 발주현황(P/O별 발주상세내역) 조회 -->
+	<select id = "pdb13_list1" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.COMPANY,
+			        A.PLANT,
+			        A.PDTNO,
+			        SF_PJTNO_DATA(A.COMPANY, A.PLANT, SUBSTR(A.PDTNO,1,8), '1') PJTNO_NM,
+			        SF_DRSEQ_DRDSC(A.COMPANY, A.PLANT, SUBSTR(A.PDTNO,1,9), A.DRSEQ) DRDSC,
+			        A.DRSEQ,
+			        A.PUR_NO,
+			        B.PUR_SEQ,
+			        B.ITEM,
+			        B.ITEM_NAME,
+			        B.NORM,
+			        B.UOM,
+			        A.SUPL_CLASS,
+			        B.CURRENCY,
+			        A.VENDOR,
+			        C.BY_NM,
+			        A.PUR_DATE,
+			        A.PAY_METHOD,
+			        A.PUR_TYPE,
+			        NVL(B.PUR_QTY, 0) - NVL(B.CNCL_QTY, 0) PUR_QTY,
+			        NVL(B.PUR_PRICE,0) PUR_PRICE,
+			        ((NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY, 0)) * NVL(B.PUR_PRICE,0)) PUR_AMT,
+			        NVL(B.NEGO_PRICE,0) NEGO_PRICE,
+			        B.DELV_DATE,
+			        NVL(B.ALLO_QTY,0) ALLO_QTY
+		FROM PDA04_MST A, PDA04_DTL B, ACNT.SAA_BUYER C, SCA09_MST F
+		WHERE A.COMPANY = #{company_cd}
+		AND A.PLANT = #{plant_cd}
+		<if test = "date_fr != null and date_fr != '' and date_to != null and date_to != ''">
+			AND TRUNC(A.PUR_DATE) BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		</if>
+		<if test = "cust_cd1 != null and cust_cd1 != '' and cust_cd2 != null and cust_cd2 != ''">
+			AND A.VENDOR BETWEEN #{cust_cd1} AND #{cust_cd2}
+		</if>
+		<if test = "pjtno1 != null and pjtno1 != '' and pjtno2 != null and pjtno2 != ''">
+			AND SUBSTR(A.PDTNO,3,8) BETWEEN SUBSTR(#{pjtno1},3,8) AND SUBSTR(#{pjtno2},3,8)
+		</if>
+		<if test = "itnbr1 != null and itnbr1 != '' and itnbr2 != null and itnbr2 != ''">
+			AND B.ITEM BETWEEN #{itnbr1} AND #{itnbr2}
+		</if>
+		<if test = "purno1 != null and purno1 != '' and purno2 != null and purno2 != ''">
+			AND A.PUR_NO BETWEEN #{purno1} AND #{purno2}
+		</if>
+		<if test = "itnbr_gu != null and itnbr_gu != ''">
+			AND ((#{itnbr_gu} = '%') OR (#{itnbr_gu} = 'M' 
+			AND((A.DRSEQ BETWEEN '100' AND '199') OR (A.DRSEQ BETWEEN '300' AND '399')) 
+			AND SUBSTR(F.PJTNO,2,1) <![CDATA[ <> ]]> 'T') OR (#{itnbr_gu} = 'E'
+			AND(A.DRSEQ    BETWEEN    '200' AND '299') AND SUBSTR(F.PJTNO,2,1) <![CDATA[ <> ]]> 'T')
+			OR (#{itnbr_gu} = 'C' AND SUBSTR(F.PJTNO,2,1) = 'T'))
+		</if>
+		AND    A.COMPANY = B.COMPANY(+)
+		AND    A.PLANT    =    B.PLANT(+)
+		AND    A.PDTNO    =    B.PDTNO(+)
+		AND    A.DRSEQ    =    B.DRSEQ(+)
+		AND    A.PUR_NO    =    B.PUR_NO(+)
+		AND    A.VENDOR    =    C.BY_CD(+)
+		AND    A.COMPANY    = F.COMPANY(+)
+		AND    A.PLANT        = F.PLANT(+)
+		AND    A.PDTNO        = F.PJTNO(+)
+		ORDER BY A.PUR_NO, B.ITEM
+	</select>
+	
+	<!-- 원 발주현황(업체별 발주집계표) 조회 -->
+	<select id = "pdb13_list2" parameterType="hashmap" resultType="hashmap">	
+	
+	</select>
+	
+	<!-- 원 발주현황(PJT별 발주집계표) 조회 -->
+	<select id = "pdb13_list3" parameterType="hashmap" resultType="hashmap">	
+
+	</select>	
+	
+	<!-- 원 발주현황(품목별 발주집계표) 조회 -->
+	<select id = "pdb13_list4" parameterType="hashmap" resultType="hashmap">	
+	
+	</select>
+	
+	<!-- 원 발주현황(업체별 발주내역 총집계표) 조회 -->
+	<select id = "pdb13_list5" parameterType="hashmap" resultType="hashmap">	
+	
+	</select>	
+	
+	<!-- 원 발주현황(PJT별 발주내역 총집계표) 조회 -->
+	<select id = "pdb13_list6" parameterType="hashmap" resultType="hashmap">
+	
+	</select>	
+	
 	<!-- 월별 수입검사현황 조회 -->
 	<select id = "pha03_list" parameterType="hashmap" resultType="hashmap">
 		SELECT  B.VENDOR VENDOR_NAME,
@@ -1004,7 +1114,7 @@
 		WHERE B.COMPANY = #{company_cd}
 		AND B.PLANT         = #{plant_cd} 
 		<if test = "insp_date_fr != null and insp_date_fr != '' and insp_date_to != null and insp_date_to != ''">
-			AND B.INSP_DATE BETWEEN  REPLACE(substr(#{insp_date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{insp_date_to}, 1, 10), '-', '') 
+			AND B.INSP_DATE BETWEEN REPLACE(substr(#{insp_date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{insp_date_to}, 1, 10), '-', '')
 		</if>
 		<if test = "item1 != null and item1 != '' and item2 != null and item2 != ''">
 			AND A.ITEM BETWEEN  #{item1} AND #{item2}
@@ -1047,7 +1157,7 @@
 		WHERE A.COMPANY = #{company_cd}
 		AND A.PLANT = #{plant_cd}
 		<if test = "qc1 != null and qc1 != '' and qc2 != null and qc2 != ''">
-			AND C.QC_DATE BETWEEN #{qc1] AND #{qc2}
+			AND C.QC_DATE BETWEEN REPLACE(substr(#{qc1}, 1, 10), '-', '') AND REPLACE(substr(#{qc2}, 1, 10), '-', '')
 		</if>
 		<if test = "mo_no != null and mo_no != ''">
 		AND C.MO_NO LIKE #{mo_no} || '%'

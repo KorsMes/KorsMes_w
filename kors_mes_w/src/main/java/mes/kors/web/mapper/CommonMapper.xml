@@ -26,5 +26,18 @@
 		WHERE USER_ID = #{user_id}
 	</select>
 	
+	<!-- 공통코드 : 회사정보 -->
+	<select id = "getCompanyInfo" resultType="hashmap">
+		SELECT 	COMPANY , 
+	         		COMPANY_NAME_K
+      	FROM PAA06_MST
+	</select>
+	
+	<!-- 공통코드 : 공장정보 -->
+	<select id = "getPlantInfo" resultType="hashmap">
+		SELECT 	PLANT, 
+                	PLANT_NAME_K 
+       FROM PAA07_MST
+	</select>
 	
 </mapper>	

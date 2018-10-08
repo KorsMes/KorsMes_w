@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,9 @@ public class ApiController {
 	 * page별 정보 조회
 	 * 
 	 */
+	
+	@Inject
+	SqlSession sqlSession;
 	
 	
 	// 구매단가발행 조회
@@ -151,6 +155,14 @@ public class ApiController {
 		common2(response, list);
 	}
 	
+	// 월 발주현황(P/O별 발주상세내역) 조회
+	@RequestMapping("/pdb/pdb13_list1")
+	public void getPdb13_list1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdb13_list1(map);
+		common2(response, list);
+	}
+	
 	//월별 수입검사현황 조회
 	@RequestMapping("/pha/pha03_list")
 	public void getPha03_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
@@ -166,19 +178,6 @@ public class ApiController {
 		List<Map<String, Object>> list = apiService.phb04_list(map);
 		common2(response, list);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	

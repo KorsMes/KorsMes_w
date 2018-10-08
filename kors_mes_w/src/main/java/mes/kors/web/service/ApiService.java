@@ -84,6 +84,11 @@ public class ApiService {
 		return apiDao.pdh04_list1(map);
 	}
 	
+	// 월 발주현황(P/O별 발주상세내역) 조회
+	public List<Map<String, Object>> pdb13_list1(Map<String, Object> map){
+		return apiDao.pdb13_list1(map);
+	}
+	
 	//목표기초원가 발행(자재투입 계획서(을지))
 	public List<Map<String, Object>> pdh04_list2(Map<String, Object> map){
 		return apiDao.pdh04_list2(map);

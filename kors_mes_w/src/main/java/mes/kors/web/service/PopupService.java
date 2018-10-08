@@ -30,8 +30,8 @@ public class PopupService {
 	}
 	
 	//소속부서 조회
-	public List<Map<String, Object>> dept_list(){
-		return popupDao.dept_list();
+	public List<Map<String, Object>> dept_list(Map<String, Object> map){
+		return popupDao.dept_list(map);
 	}
 	
 	//사용자 조회 
@@ -60,8 +60,8 @@ public class PopupService {
 	}
 	
 	//공정 정보 조회 
-	public List<Map<String, Object>> task_list(){
-		return popupDao.task_list();
+	public List<Map<String, Object>> task_list(Map<String, Object> map){
+		return popupDao.task_list(map);
 	}
 	
 	//pjt번호3 정보 조회 
