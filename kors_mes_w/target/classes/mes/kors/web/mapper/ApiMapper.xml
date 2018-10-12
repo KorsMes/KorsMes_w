@@ -30,6 +30,7 @@
 	    </if>
 		    AND  A.COMPANY = B.COMPANY
 		    AND    A.ITNBR = B.ITEM 
+		    AND ROWNUM <![CDATA[ < ]]> #{page} * 30+1
 		ORDER BY A.itnbr
 	</select>
 	
@@ -400,7 +401,7 @@
 			        A.DPTNO,    
 			        A.ITGRP,    
 			        A.ORDNO PJTNO,
-			        A.JDATA,
+			        TO_CHAR(A.JDATA, 'YYYY-MM-DD') JDATA,
 			        B.PJTNM,
 			        NVL(B.PJAMT,0) PJAMT,
 			        NVL(B.MAAMT,0) MAAMT,     
@@ -415,8 +416,8 @@
 			        A.TRGBN,
 			        A.TRCAS,
 			        A.AMTNO,
-			        A.TRTAT,
-			        A.MADAT,
+			        TO_CHAR(A.TRTAT, 'YYYY-MM-DD') TRTAT,
+			        TO_CHAR(A.MADAT, 'YYYY-MM-DD') MADAT,
 			        A.JIOUT,
 			        A.BALIN
 		FROM SCA09_MST B, SFA03_MST A
@@ -504,8 +505,8 @@
 			        PROD.SF_ITNBR_NM(A.COMPANY, A.ITEM, '2') ITEM_NM,
 			        NVL(A.ORDER_QTY,0) ORDER_QTY,
 			        NVL(A.ORDER_AMT,0) ORDER_AMT,
-			        A.ORDER_DATE,
-			        A.DUE_DATE,
+			        TO_CHAR(A.ORDER_DATE, 'YYYY-MM-DD') ORDER_DATE,
+			        TO_CHAR(A.DUE_DATE, 'YYYY-MM-DD') DUE_DATE,
 			        /*구매목표예산 정보 */
 			        NVL(A.TOTAL_AMT,0) TOTAL_AMT,
 			        NVL(A.LASTTOTAL_AMT,0) LASTTOTAL_AMT,
@@ -577,30 +578,33 @@
 			        NVL(E.E_PAY_AMT,0) ADD_OUT_E_PAY_AMT,
 			        NVL(E.B_SUP_AMT,0) ADD_OUT_B_SUP_AMT,
 			        NVL(E.E_SUP_AMT,0) ADD_OUT_E_SUP_AMT,
-			        0 ADD_OUT_TRIP_AMT        ,
-			        0 ADD_OUT_PACK_AMT        ,
+			        0 ADD_OUT_TRIP_AMT,
+			        0 ADD_OUT_PACK_AMT,
 			        (SELECT NVL(SUM(NVL(QTYPR,0) * NVL(STD_PRICE,0)),0)    
-			        FROM PROD.PDH02_TBL
-			        WHERE COMPANY = A.COMPANY
-			        AND PLANT = A.PLANT
-			        AND PJTNO = A.PJTNO) PROD_EXP_AMT,
-			        A.FIX_DATE PLAN_MK_DATE, 
-			        (SELECT NVL(SUM(NVL(ALLO_QTY,0) * NVL(PUR_PRICE,0)),0)    
-			        FROM PDA04_DTL 
-			        WHERE COMPANY = A.COMPANY 
-			        AND PLANT = A.PLANT
-			        AND PDTNO = A.PJTNO 
-			        AND NVL(ALLO_QTY,0)  != 0
+			         FROM PROD.PDH02_TBL
+			         WHERE COMPANY = A.COMPANY
+			         AND PLANT = A.PLANT
+			         AND PJTNO = A.PJTNO) PROD_EXP_AMT,
+			        TO_CHAR(A.FIX_DATE, 'YYYY-MM-DD') PLAN_MK_DATE, 
+			        (SELECT nvl(SUM(NVL(allo_qty,0) * NVL(pur_price,0)),0)    
+			         FROM pda04_dtl 
+			         WHERE company = A.company 
+			         AND plant = A.plant
+			         AND pdtno = a.pjtno 
+			         AND NVL(ALLO_QTY,0) <![CDATA[ <> ]]> 0
+			         /*       AND    NVL(PR_STAT,'X') <![CDATA[  <> ]]> 'C'    */
 			        ) ALLO_AMT   
-		FROM    PDH01_MST A,        /*구매목표마스타*/
-			        PDH01_VIW01 B,        /*정상발주*/
-			        PDH01_VIW02 C,        /*정상출고*/
-			        PDH01_VIW03 D,        /*추가발주*/
-			        PDH01_VIW04 E,        /*추가출고*/
-			        PDH01_VIW05 F        /*할당사용*/
+		FROM 	PROD.PDH01_MST A, /*구매목표마스타*/
+					PROD.PDH01_VIW01 B, /*정상발주*/
+					PROD.PDH01_VIW02 C, /*정상출고*/
+					PROD.PDH01_VIW03 D, /*추가발주*/
+					PROD.PDH01_VIW04 E, /*추가출고*/
+					PROD.PDH01_VIW05 F /*할당사용*/
 		WHERE A.COMPANY = #{company_cd}
-		AND A.PLANT        =    #{plant_cd}
-		AND SUBSTR(A.PJTNO,3,6)    BETWEEN SUBSTR(#{pjtno_fr},3,6) AND SUBSTR(#{pjtno_to},3,6)
+		AND A.PLANT = #{plant_cd}
+		<if test = "pjtno_fr != null and pjtno_fr and pjtno_to != null and pjtno_to != ''">
+			AND SUBSTR(A.PJTNO,3,6) BETWEEN SUBSTR(#{pjtno_fr},3,6) AND SUBSTR(#{pjtno_to},3,6)
+		</if>
 		AND A.COMPANY = B.COMPANY(+)    
 		AND A.PLANT = B.PLANT(+)        
 		AND A.PJTNO = B.PJTNO(+)
@@ -670,9 +674,11 @@
 		                WHERE K.COMPANY = L.COMPANY
 		                AND K.PLANT = L.PLANT
 		                AND K.PJTNO = L.PJTNO
-		                AND K.COMPANY = #{oompany_cd}
+		                AND K.COMPANY = #{company_cd}
 		                AND K.PLANT = #{plant_cd}
-		                AND SUBSTR(K.PJTNO,3,6) BETWEEN SUBSTR(#{pjtno_fr},3,6) AND SUBSTR(#{pjtno_to},3,6)
+		                <if test = "pjtno_fr != null and pjtno_fr and pjtno_to != null and pjtno_to != ''">
+		                	AND SUBSTR(K.PJTNO,3,6) BETWEEN SUBSTR(#{pjtno_fr},3,6) AND SUBSTR(#{pjtno_to},3,6)
+		                </if>
 		                AND NVL(L.STATUS,'XX') = '90'
 		                GROUP BY K.COMPANY, K.PLANT, K.PJTNO, K.CINBR, NVL(K.OBJ_PRICE,0)
 		        UNION ALL
@@ -692,7 +698,9 @@
 		        FROM PROD.PAE03_MST K, PROD.PAE03_HIS J, PROD.PAD01_MST L
 		        WHERE K.COMPANY = #{company_cd}
 		        AND K.PLANT = #{plant_cd}
-		        AND SUBSTR(K.PDTNO,3,6)    BETWEEN    SUBSTR(#{pjtno_fr},3,6) AND SUBSTR(#{pjtno_to},3,6)
+		        <if test = "pjtno_fr != null and pjtno_fr and pjtno_to != null and pjtno_to != ''">
+		        	AND SUBSTR(K.PDTNO,3,6)    BETWEEN    SUBSTR(#{pjtno_fr},3,6) AND SUBSTR(#{pjtno_to},3,6)
+		        </if>
 		        AND K.COMPANY = J.COMPANY
 		        AND K.PLANT = J.PLANT
 		        AND K.PDTNO = J.PDTNO
@@ -718,7 +726,9 @@
 		        FROM PROD.PDA04_MST TA, PROD.PDA04_DTL TB 
 		        WHERE TA.COMPANY = #{company_cd}
 		        AND TA.PLANT = #{plant_cd} 
-		        AND SUBSTR(TA.PDTNO,3,6)    BETWEEN    SUBSTR(#{pjtno_fr},3,6) AND SUBSTR(#{pjtno_to},3,6)
+		        <if test = "pjtno_fr != null and pjtno_fr and pjtno_to != null and pjtno_to != ''">
+		        	AND SUBSTR(TA.PDTNO,3,6)    BETWEEN    SUBSTR(#{pjtno_fr},3,6) AND SUBSTR(#{pjtno_to},3,6)
+		        </if>
 		        AND TA.COMPANY = TB.COMPANY
 		        AND TA.PLANT = TB.PLANT
 		        AND TA.PDTNO = TB.PDTNO
@@ -1007,6 +1017,60 @@
 		]]>
 	</select>
 	
+	<!-- 자재투입 상세분석표(수주건별 분석표) -->
+	<select id = "pdd06_list1" parameterType="hashmap" resultType="hashmap">
+		SELECT  COMPANY,
+			        PLANT,
+			        PJTNO,
+			        GUBUN,
+			        PJT_SEQ,
+			        NVL(IN_AMT,0) AMT,
+			        TRIM(LPAD(DECODE(GUBUN,'A0','수주금액','B0','목표예산','C0','요구금액','D0','발주금액','E0','재고사용','F0','자재합계','G0','FAIL COST','비율(%)'),10)) GBN_NM,
+			        (SELECT NVL(MAX(PJT_SEQ),0)
+			         FROM PDD06_TMP01
+			         WHERE COMPANY = #{company_cd}
+			         AND PLANT = #{plant_cd}
+			         AND PJT_SEQ <![CDATA[ <= ]]> 17
+			         AND USER_ID = #{user_id} 
+			         AND SUBSTR(PJTNO,1,3) NOT IN ('TMP','TOT')
+			        ) MAX_SEQ,
+			        USER_ID
+		FROM PDD06_TMP01
+		WHERE COMPANY = #{company_cd}
+		AND PLANT = #{plant_cd}
+		AND PJT_SEQ <![CDATA[ <= ]]> 17
+		<if test="user_id != null and user_id != ''">
+			AND USER_ID = #{user_id} 
+		</if>
+		ORDER BY COMPANY, PLANT, GUBUN, PJT_SEQ, PJTNO
+	</select>
+	
+	<!-- 자재투입 상세분석표(월별 분석표) -->
+	<select id = "pdd06_list2" parameterType="hashmap" resultType="hashmap">
+		SELECT  COMPANY,
+			        PLANT,
+			        YYMM,
+			        DECODE(YYMM,'TOTAL', YYMM, SUBSTR(YYMM,5,2) || '월') MONTH,
+			        GUBUN,
+			        NVL(IN_AMT,0) AMT,
+			        TRIM(LPAD(DECODE(GUBUN,'A0','수주금액','B0','목표예산','C0','요구금액','D0','발주금액','E0','재고사용','F0','자재합계','G0','FAIL COST','비율(%)'),10)) GBN_NM,
+			        (SELECT NVL(MAX(SUBSTR(YYMM,5,2)),'00')
+			         FROM PDD06_TMP02
+			         WHERE COMPANY = #{company_cd}
+			         AND PLANT = #{plant_cd}
+			         AND USER_ID = #{user_id} 
+			         AND YYMM <![CDATA[ <> ]]> 'TOTAL'
+			         AND GUBUN = 'A0'
+			         AND NVL(IN_AMT,0)    > 0
+			        ) MAX_YYMM,
+			        USER_ID
+		FROM PDD06_TMP02
+		WHERE COMPANY = #{company_cd}
+		AND PLANT = #{plant_cd}
+		AND USER_ID = #{user_id} 
+		ORDER BY COMPANY, PLANT, GUBUN, YYMM
+	</select>
+
 	<!-- 월 발주현황(P/O별 발주상세내역) 조회 -->
 	<select id = "pdb13_list1" parameterType="hashmap" resultType="hashmap">
 		SELECT  A.COMPANY,
@@ -1071,30 +1135,849 @@
 		ORDER BY A.PUR_NO, B.ITEM
 	</select>
 	
-	<!-- 원 발주현황(업체별 발주집계표) 조회 -->
-	<select id = "pdb13_list2" parameterType="hashmap" resultType="hashmap">	
-	
+	<!-- 월 발주현황(업체별 발주집계표) 생성 -->
+	<select id = "pdb13_list2-1" parameterType="hashmap">	
+		{ CALL SP_PDB13_RETRIEVE1(     
+						                    #{company_cd},         
+						                    #{plant_cd},         
+						                    REPLACE(substr(#{date_fr}, 1, 10), '-', ''),         
+						                    REPLACE(substr(#{date_to}, 1, 10), '-', ''),    
+						                    <choose>
+						                    	<when test="cust_cd1 != null and cust_cd1 != ''">
+						                    		#{cust_cd1},	
+						                    	</when>
+						                    	<otherwise>
+						                    		'00000',
+						                    	</otherwise>
+						                    </choose>
+						                    <choose>
+						                    	<when test="cust_cd2 != null and cust_cd2 != ''">
+						                    		#{cust_cd2},
+						                    	</when>
+						                    	<otherwise>
+						                    		'ZZZZZ',
+						                    	</otherwise>
+						                    </choose>
+						                    <choose>
+						                    	<when test="pjtno1 != null and pjtno1 != ''">
+						                    		#{pjtno1},
+						                    	</when>
+						                    	<otherwise>
+						                    		'00000000',
+						                    	</otherwise>
+						                    </choose>
+						                    <choose>
+						                    	<when test="pjtno2 != null and pjtno2 != ''">
+						                    		#{pjtno2},
+						                    	</when>
+						                    	<otherwise>
+						                    		'ZZZZZZZZ',
+						                    	</otherwise>
+						                    </choose>
+						                    <choose>
+						                    	<when test="itnbr1 != null and itnbr1 != ''">
+						                    		#{itnbr1},
+						                    	</when>
+						                    	<otherwise>
+						                    		'000000000',
+						                    	</otherwise>
+						                    </choose>
+						                    <choose>
+						                    	<when test="itnbr2 != null and itnbr2 != ''">
+						                    		#{itnbr2},
+						                    	</when>
+						                    	<otherwise>
+						                    		'ZZZZZZZZZ',
+						                    	</otherwise>
+						                    </choose>
+						                    <choose>
+						                    	<when test="purno1 != null and purno1 != ''">
+						                    		#{purno1},
+						                    	</when>
+						                    	<otherwise>
+						                    		'00000000000000',
+						                    	</otherwise>
+						                    </choose>
+						                    <choose>
+						                    	<when test="purno2 != null and purno2 != ''">
+						                    		#{purno2},
+						                    	</when>
+						                    	<otherwise>
+						                    		'ZZZZZZZZZZZZZZ',
+						                    	</otherwise>
+						                    </choose>
+						                    #{itnbr_gu}
+			)
+		}
 	</select>
 	
-	<!-- 원 발주현황(PJT별 발주집계표) 조회 -->
+	<!-- 월 발주현황(업체별 발주집계표) 조회 -->
+	<select id = "pdb13_list2-2" parameterType="hashmap" resultType="hashmap">	
+		SELECT  COMPANY,
+			        PLANT,
+			        VENDOR,
+			        ITEM,
+			        PUR_PRICE,
+			        NEGO_PRICE,
+			        PUR_QTY,
+			        PUR_AMT,
+			        BY_NM,
+			        ITEM_NAME,
+			        NORM,
+			        UOM    
+		FROM PDB05_TMP01
+		ORDER BY VENDOR, ITEM
+	</select>
+	
+	<!-- 월 발주현황(PJT별 발주집계표) 조회 -->
 	<select id = "pdb13_list3" parameterType="hashmap" resultType="hashmap">	
-
+		SELECT  A.COMPANY,
+			        A.PLANT,
+			        A.PDTNO,
+			        B.ITEM,
+			        MAX(NVL(B.PUR_PRICE,0)) PUR_PRICE,
+			        MAX(NVL(B.NEGO_PRICE,0)) NEGO_PRICE,
+			        SUM(NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY,0)) PUR_QTY,
+			        SUM((NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY,0)) * NVL(B.PUR_PRICE,0)) PUR_AMT,
+			        SF_PJTNO_DATA(A.COMPANY, A.PLANT, SUBSTR(A.PDTNO,1,8), '1') PJTNO_NM,
+			        SF_ITNBR_TOT2(A.COMPANY, B.ITEM, '2', '1') ITEM_NAME,
+			        SF_ITNBR_TOT2(A.COMPANY, B.ITEM, '2', '2') NORM,
+			        SF_ITNBR_TOT2(A.COMPANY, B.ITEM, '2', '5') UOM    
+		FROM PDA04_MST A, PDA04_DTL B, SCA09_MST F
+		WHERE A.COMPANY = #{company_cd}
+		AND A.PLANT = #{plant_cd}
+		AND TRUNC(A.PUR_DATE) BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		<if test="cust_cd1 != null and cust_cd1 != '' and cust_cd2 != null and cust_cd2 != ''">
+			AND A.VENDOR BETWEEN #{cust_cd1} AND #{cust_cd2}
+		</if>
+		<if test="pjtno1 != null and pjtno1 != '' and pjtno2 != null and pjtno2 != ''">
+			AND SUBSTR(A.PDTNO,3,8) BETWEEN SUBSTR(#{pjtno1},3,8) AND SUBSTR(#{pjtno2},3,8)
+		</if>
+		<if test="itnbr1 != null and itnbr1 != '' and itnbr2 != null and itnbr2 != ''">
+			AND B.ITEM BETWEEN #{itnbr1} AND #{itnbr2}
+		</if>
+		<if test="purno1 != null and purno1 != '' and purno2 != null and purno2 != ''">
+			AND A.PUR_NO BETWEEN #{purno1} AND #{purno2}
+		</if>
+		AND ((#{itnbr_gu} = '%') OR (#{itnbr_gu} = 'M' AND((A.DRSEQ BETWEEN '100' AND '199') OR (A.DRSEQ BETWEEN '300' AND '399')) AND SUBSTR(F.PJTNO,2,1) <![CDATA[ <> ]]> 'T')
+		      OR (#{itnbr_gu} = 'E' AND(A.DRSEQ BETWEEN '200' AND '299') AND SUBSTR(F.PJTNO,2,1) <![CDATA[ <> ]]> 'T')
+		      OR (#{itnbr_gu} = 'C' AND SUBSTR(F.PJTNO,2,1) = 'T'))
+		AND A.COMPANY = B.COMPANY(+)
+		AND A.PLANT = B.PLANT(+)
+		AND A.PDTNO = B.PDTNO(+)
+		AND A.DRSEQ = B.DRSEQ(+)
+		AND A.PUR_NO = B.PUR_NO(+)
+		AND A.COMPANY = F.COMPANY(+)
+		AND A.PLANT = F.PLANT(+)
+		AND A.PDTNO = F.PJTNO(+)
+		GROUP BY A.COMPANY, A.PLANT, A.PDTNO, B.ITEM
+		ORDER BY A.PDTNO, B.ITEM
 	</select>	
 	
-	<!-- 원 발주현황(품목별 발주집계표) 조회 -->
-	<select id = "pdb13_list4" parameterType="hashmap" resultType="hashmap">	
-	
+	<!-- 월 발주현황(품목별 발주집계표) 생성 -->
+	<select id = "pdb13_list4-1" parameterType="hashmap">	
+		{ CALL SP_PDB13_RETRIEVE2( 
+						                    #{company_cd},         
+						                    #{plant_cd},         
+						                    REPLACE(substr(#{date_fr}, 1, 10), '-', ''),         
+						                    REPLACE(substr(#{date_to}, 1, 10), '-', ''),    
+						                    <choose>
+						                        <when test="cust_cd1 != null and cust_cd1 != ''">
+						                            #{cust_cd1},    
+						                        </when>
+						                        <otherwise>
+						                            '00000',
+						                        </otherwise>
+						                    </choose>
+						                    <choose>
+						                        <when test="cust_cd2 != null and cust_cd2 != ''">
+						                            #{cust_cd2},
+						                        </when>
+						                        <otherwise>
+						                            'ZZZZZ',
+						                        </otherwise>
+						                    </choose>
+						                    <choose>
+						                        <when test="pjtno1 != null and pjtno1 != ''">
+						                            #{pjtno1},
+						                        </when>
+						                        <otherwise>
+						                            '00000000',
+						                        </otherwise>
+						                    </choose>
+						                    <choose>
+						                        <when test="pjtno2 != null and pjtno2 != ''">
+						                            #{pjtno2},
+						                        </when>
+						                        <otherwise>
+						                            'ZZZZZZZZ',
+						                        </otherwise>
+						                    </choose>
+						                    <choose>
+						                        <when test="itnbr1 != null and itnbr1 != ''">
+						                            #{itnbr1},
+						                        </when>
+						                        <otherwise>
+						                            '000000000',
+						                        </otherwise>
+						                    </choose>
+						                    <choose>
+						                        <when test="itnbr2 != null and itnbr2 != ''">
+						                            #{itnbr2},
+						                        </when>
+						                        <otherwise>
+						                            'ZZZZZZZZZ',
+						                        </otherwise>
+						                    </choose>
+						                    <choose>
+						                        <when test="purno1 != null and purno1 != ''">
+						                            #{purno1},
+						                        </when>
+						                        <otherwise>
+						                            '00000000000000',
+						                        </otherwise>
+						                    </choose>
+						                    <choose>
+						                        <when test="purno2 != null and purno2 != ''">
+						                            #{purno2},
+						                        </when>
+						                        <otherwise>
+						                            'ZZZZZZZZZZZZZZ',
+						                        </otherwise>
+						                    </choose>
+						                    #{itnbr_gu}
+		)}
 	</select>
 	
-	<!-- 원 발주현황(업체별 발주내역 총집계표) 조회 -->
+	<!-- 월 발주현황(품목별 발주집계표) 조회 -->
+	<select id = "pdb13_list4-2" parameterType="hashmap" resultType="hashmap">	
+		SELECT  COMPANY,
+			        PLANT,
+			        ITEM,
+			        PUR_PRICE,
+			        NEGO_PRICE,
+			        PUR_QTY,
+			        PUR_AMT,
+			        ITEM_NAME,
+			        NORM,
+			        UOM,
+			        ALLO_QTY
+		FROM PDB05_TMP01
+		ORDER BY ITEM
+	</select>
+	
+	<!-- 월 발주현황(업체별 발주내역 총집계표) 조회 -->
 	<select id = "pdb13_list5" parameterType="hashmap" resultType="hashmap">	
-	
+		SELECT  A.COMPANY,
+		        	A.PLANT,
+			        A.VENDOR,
+			        SUM(NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY,0)) PUR_QTY,    
+			        SUM(NVL(B.ALLO_QTY,0) * NVL(B.PUR_PRICE,0)) ALLO_AMT,
+			        SUM((NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY,0)) * NVL(B.NEGO_PRICE,0)) NEGO_AMT,
+			        SUM((NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY,0)) * NVL(B.PUR_PRICE,0)) PUR_AMT,
+			        NVL(MAX(NVL(C.BY_NM,'')),'') BY_NM                    
+		FROM PDA04_MST A, PDA04_DTL B, ACNT.SAA_BUYER C, SCA09_MST F
+		WHERE A.COMPANY = #{company_cd}
+		AND A.PLANT = #{plant_cd}
+		AND TRUNC(A.PUR_DATE) BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		<if test="cust_cd1 != null and cust_cd1 != '' and cust_cd2 != null and cust_cd2 != ''">
+			AND A.VENDOR BETWEEN #{cust_cd1} AND #{cust_cd2}
+		</if>
+		<if test="pjtno1 != null and pjtno1 != '' and pjtno2 != null and pjtno2 != ''">
+			AND SUBSTR(A.PDTNO,3,8) BETWEEN SUBSTR(#{pjtno1},3,8) AND SUBSTR(#{pjtno2},3,8)
+		</if>
+		<if test="itnbr1 != null and itnbr1 != '' and itnbr2 != null and itnbr2 != ''">
+			AND B.ITEM BETWEEN #{itnbr1} AND #{itnbr2}
+		</if>
+		<if test="purno1 != null and purno1 != '' and purno2 != null and purno2 != ''">
+			AND A.PUR_NO BETWEEN #{purno1} AND #{purno2}
+		</if>
+		AND ((#{itnbr_gu} = '%')
+		OR (#{itnbr_gu} = 'M' AND((A.DRSEQ BETWEEN '100' AND '199') OR (A.DRSEQ BETWEEN '300' AND '399')) AND SUBSTR(F.PJTNO,2,1) <![CDATA[ <> ]]> 'T')
+		OR (#{itnbr_gu} = 'E' AND(A.DRSEQ BETWEEN '200' AND '299') AND SUBSTR(F.PJTNO,2,1) <![CDATA[ <> ]]> 'T')
+		OR (#{itnbr_gu} = 'C' AND SUBSTR(F.PJTNO,2,1) = 'T'))
+		AND A.COMPANY = B.COMPANY(+)
+		AND A.PLANT = B.PLANT(+)
+		AND A.PDTNO = B.PDTNO(+)
+		AND A.DRSEQ = B.DRSEQ(+)
+		AND A.PUR_NO = B.PUR_NO(+)
+		AND A.VENDOR = C.BY_CD(+)
+		AND A.COMPANY = F.COMPANY(+)
+		AND A.PLANT = F.PLANT(+)
+		AND A.PDTNO = F.PJTNO(+)
+		GROUP BY A.COMPANY, A.PLANT, A.VENDOR
+		ORDER BY A.VENDOR
 	</select>	
 	
-	<!-- 원 발주현황(PJT별 발주내역 총집계표) 조회 -->
+	<!-- 월 발주현황(PJT별 발주내역 총집계표) 조회 -->
 	<select id = "pdb13_list6" parameterType="hashmap" resultType="hashmap">
-	
+		SELECT  A.COMPANY,
+			        A.PLANT,
+			        A.PDTNO,
+			        SUM(NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY,0)) PUR_QTY,    
+			        SUM(NVL(B.ALLO_QTY,0) * NVL(B.PUR_PRICE,0)) ALLO_AMT,
+			        SUM((NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY,0)) * NVL(B.NEGO_PRICE,0)) NEGO_AMT,
+			        SUM((NVL(B.PUR_QTY,0) - NVL(B.CNCL_QTY,0)) * NVL(B.PUR_PRICE,0)) PUR_AMT,
+			        SF_PJTNO_DATA(A.COMPANY, A.PLANT, SUBSTR(A.PDTNO,1,8), '1') PJTNO_NM        
+		FROM PDA04_MST A, PDA04_DTL B, SCA09_MST F
+		WHERE A.COMPANY =#{company_cd}
+		AND A.PLANT = #{plant_cd}
+		AND TRUNC(A.PUR_DATE) BETWEEN REPLACE(substr(#{date_fr}, 1, 10), '-', '') AND REPLACE(substr(#{date_to}, 1, 10), '-', '')
+		<if test="cust_cd1 != null and cust_cd1 != '' and cust_cd2 != null and cust_cd2 != ''">
+			AND A.VENDOR BETWEEN #{cust_cd1} AND #{cust_cd2}
+		</if>
+		<if test="pjtno1 != null and pjtno1 != '' and pjtno2 != null and pjtno2 != ''">
+			AND SUBSTR(A.PDTNO,3,6) BETWEEN SUBSTR(#{pjtno1},3,6) AND SUBSTR(#{pjtno2},3,6)
+		</if> 
+		<if test="itnbr1 != null and itnbr1 != '' and itnbr2 != null and itnbr2 != ''">
+			AND B.ITEM BETWEEN #{itnbr1} AND #{itnbr2}
+		</if>
+		<if test="purno1 != null and purno1 != '' and purno2 != null and purno2 != ''">
+			AND A.PUR_NO BETWEEN #{purno1} AND #{purno2}
+		</if>
+		AND ((#{itnbr_gu} = '%')
+		OR (#{itnbr_gu} = 'M' 
+		AND ((A.DRSEQ BETWEEN '100' AND '199') OR (A.DRSEQ BETWEEN '300' AND '399')) 
+		AND SUBSTR(F.PJTNO,2,1) <![CDATA[ <> ]]> 'T'
+		)
+		OR (#{itnbr_gu} = 'E'
+		AND(A.DRSEQ BETWEEN '200' AND '299')
+		AND SUBSTR(F.PJTNO,2,1) <![CDATA[ <> ]]> 'T'
+		)
+		OR (#{itnbr_gu} = 'C'
+		AND SUBSTR(F.PJTNO,2,1) = 'T' 
+		)
+		)
+		AND A.COMPANY = B.COMPANY(+)
+		AND A.PLANT = B.PLANT(+)
+		AND A.PDTNO = B.PDTNO(+)
+		AND A.DRSEQ = B.DRSEQ(+)
+		AND A.PUR_NO = B.PUR_NO(+)
+		AND A.COMPANY = F.COMPANY(+)
+		AND A.PLANT = F.PLANT(+)
+		AND A.PDTNO = F.PJTNO(+)
+		GROUP BY A.COMPANY, A.PLANT, A.PDTNO
+		ORDER BY A.PDTNO
 	</select>	
+	
+	<!-- 부품 입고대기 현황 -->
+	<select id = "pea03_list" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.COMPANY,
+			        A.DEPS_NO,   
+			        A.VENDOR,
+			        A.VENDOR VENDOR_NAME, 
+			        A.PLANT,
+			        A.PDTNO,
+			        A.ORDER_NO, 
+			        A.ITEM,
+			        B.NAME ITEM_NAME_K,   
+			        B.SPEC1 NORM1,   
+			        B.UNMSR PUR_UM,
+			        C.IQC_YN,
+			        DECODE(C.IQC_YN, 'Y', (NVL(A.DELV_QTY,0) - NVL(A.INSP_QTY,0)), 0) IQC_DELAY,
+			        DECODE(C.IQC_YN, 'Y', (NVL(A.INSP_QTY,0) - NVL(A.DEPS_QTY,0)), (NVL(A.DELV_QTY,0) - NVL(A.DEPS_QTY,0))) INC_DELAY, 
+			        TO_CHAR(A.DELV_DATE, 'YYYY-MM-DD') DELV_DATE,
+			        TO_CHAR(A.INSP_DATE, 'YYYY-MM-DD') INSP_DATE,
+			        TO_CHAR(A.DEPS_DATE, 'YYYY-MM-DD') DEPS_DATE,   
+			        NVL(A.DELV_QTY,0) DELV_QTY,
+			        NVL(A.INSP_QTY,0) INSP_QTY,   
+			        NVL(A.DEPS_QTY,0) DEPS_QTY,
+			        A.STEP_STATUS
+		FROM SALE.SAB01_MST B, PEB01_MST A, PAD01_MST C
+		WHERE A.COMPANY = #{company_cd}
+		AND A.PLANT = #{plant_cd}
+		<if test="cust_cd != null and cust_cd != ''">
+			AND (A.VENDOR = #{cust_cd} OR #{cust_cd} = '*')
+		</if>
+		<if test="pjtno != null and pjtno != ''">
+			AND A.PDTNO LIKE #{pjtno} || '%'
+		</if>
+		<if test="drseq != null and drseq != ''">
+			AND A.ORDER_NO LIKE #{drseq} || '%'
+		</if>
+		<if test="item1 != null and item1 != '' and item2 != null and item2 != ''">
+			AND A.ITEM BETWEEN #{item1} AND #{item2}
+		</if>
+		<if test="delv_date1 != null and delv_date1 != '' and delv_date2 != null and delv_date2 != ''">
+			AND TRUNC(A.DELV_DATE) BETWEEN REPLACE(substr(#{delv_date1}, 1, 10), '-', '') AND REPLACE(substr(#{delv_date2}, 1, 10), '-', '')
+		</if>
+		AND A.PUR_NO IS NOT NULL
+		AND A.COMPANY = B.COMPANY
+		AND A.ITEM = B.ITNBR
+		AND A.COMPANY = C.COMPANY
+		AND A.ITEM = C.ITNBR
+		ORDER BY A.VENDOR, A.DEPS_NO, A.ITEM
+	</select> 
+	
+	<!-- 일자별 자재입고 현황 -->
+	<select id = "peb14_list1" parameterType="hashmap" resultType="hashmap">
+		SELECT  TO_CHAR(A.DEPS_DATE, 'YYYY-MM-DD') DEPS_DATE,
+			        A.ITEM,   
+			        B.NAME  ITEM_NAME_K,   
+			        B.SPEC1 NORM1,   
+			        SF_ITNBR_TOT(A.COMPANY, A.ITEM, '5') STOCK_UM, 
+			        B.IFORM ITEM_TYPE,  
+			        A.DEPS_TYPE,
+			        A.DEPS_QTY, 
+			        A.DEPS_PRICE, 
+			        NVL(A.DEPS_AMT, 0) DEPS_AMT,
+			        NVL(A.DEPS_FAMT, 0) DEPS_FAMT,
+			        A.PLANT,
+			        A.VENDOR VENDOR,
+			        A.VENDOR VENDOR_NAME,
+			        A.DEPS_NO,
+			        A.SUPL_CLASS,
+			        A.CURRENCY,
+			        TO_CHAR(A.DELV_DATE, 'YYYY-MM-DD') DELV_DATE,
+			        B.JIJIC,
+			        B.JEJOS,
+			        A.PDTNO,
+			        SF_PROJECT_NM(A.COMPANY,A.PLANT,A.PDTNO) PJT_NM,
+			        A.PUR_NO,
+			        SF_ITNBR_TOT(A.COMPANY, A.ITEM, '9') ABC_CD,
+			        A.COMPANY
+		FROM PEB01_MST A, SALE.SAB01_MST B  
+		WHERE A.COMPANY = #{company_cd}
+		AND A.PLANT = #{plant_cd}
+		<if test="date1 != null and date1 != '' and date2 != null and date2 != ''">
+			AND A.DEPS_DATE BETWEEN REPLACE(substr(#{date1}, 1, 10), '-', '') AND REPLACE(substr(#{date2}, 1, 10), '-', '')
+		</if>
+		<if test="cust_cd != null and cust_cd != ''">
+			AND (A.VENDOR = #{cust_cd} OR #{cust_cd} = '*')
+		</if>
+		<if test="item != null and item != ''">
+			AND (A.ITEM = #{item} OR #{item} = '*')
+		</if>
+		AND A.SUPL_CLASS <![CDATA[ <> ]]> 'OS'
+		AND A.STEP_STATUS = '50' 
+		AND B.COMPANY = A.COMPANY
+		AND B.ITNBR   = A.ITEM
+		<if test="item_type != null and item_type != ''">
+			AND B.IFORM LIKE #{item_type}||'%'
+		</if>
+		ORDER BY A.VENDOR, A.PUR_NO, A.DEPS_NO, A.ITEM, A.PDTNO
+	</select>
+	
+	<!-- 일자별 자재입고 현황(작업지시별 입고현황) -->
+	<select id = "peb14_list2" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.PDTNO,   
+			        SF_PROJECT_NM(A.COMPANY, A.PLANT, A.PDTNO) PJT_NM,
+			        ROUND(SUM(NVL(A.DEPS_AMT,0))) QTY,
+			        B.MATMT,
+			        A.COMPANY    
+		FROM PEB01_MST A, SALE.SCA09_MST B
+		WHERE A.COMPANY = B.COMPANY
+		AND A.PLANT = B.PLANT
+		AND substr(a.pdtno,1,8) = B.PJTNO
+		AND A.COMPANY = #{company_cd}
+		AND A.PLANT   = #{plant_cd}
+		AND A.STEP_STATUS = '50' 
+		<if test="date1 != null and date1 != '' and date2 != null and date2 != ''">
+			AND A.DEPS_DATE BETWEEN REPLACE(substr(#{date1}, 1, 10), '-', '') AND REPLACE(substr(#{date2}, 1, 10), '-', '')
+		</if>
+		GROUP BY A.PDTNO, SF_PROJECT_NM(A.COMPANY, A.PLANT, A.PDTNO), B.MATMT, A.COMPANY    
+	</select>
+	
+	<!-- 일자별 자재입고 현황(거래처별 입고현황) -->
+	<select id = "peb14_list3" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.VENDOR,
+			        B.BY_NM,
+			        B.BU_CD,
+			        B.BY_TEL_NO,
+			        B.BY_PRSN,
+			        ROUND(SUM(NVL(A.DEPS_AMT,0)))  QTY,
+			        SUM(DECODE(C.MCCOD,'1',A.DEPS_AMT,0)) TOT_1,
+			        SUM(DECODE(C.MCCOD,'2',A.DEPS_AMT,0)) TOT_2,
+			        A.COMPANY
+		FROM PEB01_MST A, ACNT.SAA_BUYER B, SALE.SAB01_MST C
+		WHERE A.COMPANY = #{company_cd}
+		AND A.PLANT   = #{plant_cd}
+		AND A.ITEM = C.ITNBR
+		AND STEP_STATUS = '50' 
+		<if test="date1 != null and date1 != '' and date2 != null and date2 != ''">
+			AND A.DEPS_DATE BETWEEN REPLACE(substr(#{date1}, 1, 10), '-', '') AND REPLACE(substr(#{date2}, 1, 10), '-', '')
+		</if>
+		AND B.BY_CD = A.VENDOR
+		GROUP BY A.VENDOR, B.BY_NM, B.BU_CD, B.BY_TEL_NO, B.BY_PRSN,  A.COMPANY
+		ORDER BY B.BY_NM
+	</select>
+	
+	<!-- 일자별 자재입고 현황(작업지시별/품번별 입고현황) -->
+	<select id="peb14_list4" parameterType="hashmap" resultType="hashmap">
+		SELECT  TO_CHAR(A.DEPS_DATE, 'YYYY-MM-DD') DEPS_DATE,
+			        A.ITEM,   
+			        B.NAME  ITEM_NAME_K,   
+			        B.SPEC1 NORM1,   
+			        SF_ITNBR_TOT(A.COMPANY, A.ITEM, '5') STOCK_UM, 
+			        B.IFORM ITEM_TYPE,  
+			        A.DEPS_TYPE,
+			        A.DEPS_QTY, 
+			        A.DEPS_PRICE, 
+			        NVL(A.DEPS_AMT, 0) DEPS_AMT,
+			        NVL(A.DEPS_FAMT, 0) DEPS_FAMT,
+			        A.PLANT,
+			        A.VENDOR VENDOR,
+			        A.VENDOR VENDOR_NAME,
+			        A.DEPS_NO,
+			        A.SUPL_CLASS,
+			        A.CURRENCY,
+			        TO_CHAR(A.DELV_DATE, 'YYYY-MM-DD') DELV_DATE,
+			        B.JIJIC,
+			        B.JEJOS,
+			        A.PDTNO,
+			        SF_PROJECT_NM(A.COMPANY,A.PLANT,A.PDTNO) PJT_NM,
+			        A.PUR_NO,
+			        SF_ITNBR_TOT(A.COMPANY, A.ITEM, '9') ABC_CD,
+			        C.BY_NM, 
+			        A.COMPANY
+		FROM PEB01_MST A, SALE.SAB01_MST B, ACNT.SAA_BUYER C
+		WHERE A.COMPANY = #{company_cd}
+		AND A.PLANT = #{plant_cd}
+		<if test="date1 != null and date1 != '' and date2 != null and date2 != ''">
+			AND A.DEPS_DATE BETWEEN REPLACE(substr(#{date1}, 1, 10), '-', '') AND REPLACE(substr(#{date2}, 1, 10), '-', '')
+		</if>
+		AND A.SUPL_CLASS <![CDATA[ <> ]]> 'OS'
+		AND A.STEP_STATUS = '50' 
+		AND B.COMPANY = A.COMPANY
+		AND B.ITNBR   = A.ITEM
+		AND A.VENDOR  = C.BY_CD
+		ORDER BY A.DEPS_DATE, A.PDTNO, A.VENDOR, A.ITEM
+	</select>
+		
+	<!-- 설계/발주/입고/출고현황(자재투입진척현황(상세)) -->
+	<select id = "pec12_list1" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.COMPANY,
+			        A.PLANT,
+			        A.PJTNO,
+			        SF_PJTNO_DATA(COMPANY, PLANT, A.PJTNO,'1') PJTNO_NM,
+			        A.DRSEQ,
+			        A.ITEM,
+			        A.ITEM_SEQ,
+			        NVL(A.PL_QTY ,0) PL_QTY,
+			        A.PUR_NO,
+			        A.PUR_SEQ,
+			        NVL(A.ALLO_QTY,0) ALLO_QTY,
+			        NVL(A.PUR_QTY,0) PUR_QTY,
+			        NVL(A.REM_QTY,0) REM_QTY,
+			        A.DEPS_NO,
+			        NVL(A.DELV_QTY,0) DELV_QTY,
+			        NVL(A.DEPS_QTY,0) DEPS_QTY,
+			        A.OUT_NO,
+			        NVL(A.OUT_REQ_QTY,0) OUT_REQ_QTY,
+			        NVL(A.OUT_QTY,0) OUT_QTY,
+			        SF_PJTNO_DATA(A.COMPANY, A.PLANT, A.PJTNO,'1') PJT_NM,
+			        SF_ITNBR_TOT2(A.COMPANY, A.ITEM,'2','1') ITEM_NM,
+			        SF_ITNBR_TOT2(A.COMPANY, A.ITEM,'2','2') ITEM_SPEC,
+			        (SELECT VENDOR
+			        FROM PROD.PDA04_MST
+			        WHERE COMPANY = A.COMPANY
+			        AND PLANT = A.PLANT
+			        AND PDTNO = A.PJTNO
+			        AND DRSEQ = A.DRSEQ
+			        AND PUR_NO = A.PUR_NO) PUR_VENDOR,
+			        (SELECT VENDOR
+			        FROM PROD.PEB01_MST
+			        WHERE COMPANY = A.COMPANY
+			        AND PLANT = A.PLANT
+			        AND DEPS_NO = A.DEPS_NO
+			        AND ITEM = A.ITEM) DEPS_VENDOR
+		FROM PROD.PEC12_TMP01 A
+		WHERE COMPANY = #{company}
+		AND PLANT = #{plant_cd}
+		<if test = "pjtno1 != null and pjtno1 != '' and pjtno2 != null and pjtno2 != ''">
+			AND SUBSTR(PJTNO,3,6) BETWEEN SUBSTR(#{pjtno1},3,6) AND SUBSTR(#{pjtno2},3,6)
+		</if>
+		<if test = "drseq != null and drseq != '' and drseq2 != null and drseq2 != ''">
+			AND DRSEQ BETWEEN #{drseq} AND #{drseq2}
+		</if>
+		<if test = "item != null and item != '' and item2 != null and item2 != ''">
+			AND ITEM BETWEEN #{item} AND #{item2}
+		</if>
+		ORDER BY A.PJTNO, A.DRSEQ, A.ITEM, A.ITEM_SEQ
+	</select>
+	
+	<!-- 설계/발주/입고/출고현황(자재투입진척현황(집계)) -->
+	<select id = "pec12_list2" parameterType="hashmap" resultType="hashmap">
+		SELECT 	A.COMPANY,
+					A.PLANT,
+					A.PJTNO,
+					SF_PJTNO_DATA(COMPANY, PLANT, A.PJTNO, '1') PJTNO_NM,
+					A.DRSEQ,
+					A.ITEM,
+					NVL(SUM(NVL(A.PL_QTY ,0)),0) PL_QTY,
+					NVL(SUM(NVL(A.ALLO_QTY,0)),0) ALLO_QTY,
+					NVL(SUM(NVL(A.PUR_QTY,0)),0) PUR_QTY,
+					NVL(SUM(NVL(A.REM_QTY,0)),0) REM_QTY,
+					NVL(SUM(NVL(A.DELV_QTY,0)),0) DELV_QTY,
+					NVL(SUM(NVL(A.DEPS_QTY,0)),0) DEPS_QTY,
+					NVL(SUM(NVL(A.OUT_REQ_QTY,0)),0) OUT_REQ_QTY,
+					NVL(SUM(NVL(A.OUT_QTY,0)),0) OUT_QTY,
+					SF_PJTNO_DATA(A.COMPANY, A.PLANT, A.PJTNO, '1') PJT_NM,
+					SF_ITNBR_TOT2(A.COMPANY, A.ITEM, '2', '1') ITEM_NM,
+					SF_ITNBR_TOT2(A.COMPANY, A.ITEM, '2', '2') ITEM_SPEC
+		FROM PROD.PEC12_TMP01 A
+		WHERE COMPANY = #{company}
+		AND PLANT = #{plant_cd}
+		<if test = "pjtno1 != null and pjtno1 != '' and pjtno2 != null and pjtno2 != ''">
+			AND SUBSTR(PJTNO,3,6) BETWEEN SUBSTR(#{pjtno1},3,6) AND SUBSTR(#{pjtno2},3,6)
+		</if>
+		<if test = "drseq != null and drseq != '' and drseq2 != null and drseq2 != ''">
+			AND DRSEQ BETWEEN #{drseq} AND #{drseq2}
+		</if>
+		<if test = "item != null and item != '' and item2 != null and item2 != ''">
+			AND ITEM BETWEEN #{item} AND #{item2}
+		</if>
+		GROUP BY A.COMPANY, A.PLANT,A.PJTNO, A.DRSEQ, A.ITEM
+		ORDER BY A.PJTNO, A.DRSEQ, A.ITEM
+	</select>
+	
+	<!-- 자재수불 집계표(월별/자재별 수불집계표) -->
+	<select id = "peg08_list1" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.YYYYMM,
+			        A.ITEM,
+			        B.NAME  ITEM_NAME_K,
+			        B.SPEC1,
+			        B.JIJIC,
+			        SF_ITNBR_TOT(B.COMPANY, B.ITNBR, '10') STOCK_UM,
+			        A.STOCK_PRICE,
+			        A.LASTDEPS_DATE,
+			        A.LASTOUT_DATE,
+			        B.JEJOS,
+			        SUM(A.BASIC_QTY) BASIC_QTY,
+			        SUM(A.BASIC_AMT) BASIC_AMT,
+			        SUM(A.DEPS_QTY) DEPS_QTY,
+			        SUM(A.DEPS_AMT) DEPS_AMT,
+			        SUM(A.OUT_QTY) OUT_QTY,
+			        DECODE(SUM(A.OUT_QTY),0,0,SUM(A.OUT_AMT)) OUT_AMT,
+			        DECODE(SUM(A.OUT_QTY),0,SUM(A.OUT_AMT),0) OUT_AMT_1,
+			        DECODE(SUM(A.STOCK_AMT),0,0,SUM(A.STOCK_QTY)) STOCK_QTY,
+			        SUM(A.STOCK_AMT) STOCK_AMT,
+			        C.AGE_PRICE,
+			        B.COMPANY
+		FROM SALE.SAB01_MST B, PAD01_MST C,
+		    (SELECT  YYYYMM, ITEM, TRUNC(STOCK_PRICE, 4) STOCK_PRICE,
+		    LASTDEPS_DATE, LASTOUT_DATE,                                            
+		    SUM(NVL(BASIC_QTY,0)) BASIC_QTY,
+		    SUM(NVL(BASIC_AMT,0)) BASIC_AMT,
+		    SUM(NVL(DEPS_QTY,0)) DEPS_QTY,
+		    SUM(NVL(DEPS_AMT,0)) DEPS_AMT,
+		    SUM(NVL(OUT_QTY,0)) OUT_QTY,
+		    SUM(NVL(OUT_AMT,0)) OUT_AMT,
+		    SUM(NVL(STOCK_QTY,0)) STOCK_QTY,
+		    SUM(NVL(STOCK_AMT,0)) STOCK_AMT
+		    FROM PROD.PEG01_MST                                                         
+		    WHERE COMPANY = #{company_cd}
+		    AND PLANT = #{plant_cd}
+		    <if test = "yyyymm != null and yyyymm != ''"> 
+		    	AND YYYYMM = REPLACE(substr(#{yyyymm}, 1, 7), '-', '')
+		    </if>
+		    GROUP BY YYYYMM, ITEM, STOCK_PRICE, LASTDEPS_DATE, LASTOUT_DATE, COMPANY) A                             
+		WHERE B.COMPANY = #{company_cd}
+		AND A.ITEM = B.ITNBR
+		AND B.ITNBR = C.ITNBR
+		AND SUBSTR(B.IFORM,1,1) = 'A'
+		AND (A.BASIC_QTY <![CDATA[ <> ]]> 0 OR A.DEPS_QTY <![CDATA[ <> ]]> 0 OR A.OUT_QTY <![CDATA[ <> ]]> 0 OR A.STOCK_QTY <![CDATA[ <> ]]> 0 )
+		AND A.ITEM <![CDATA[ <> ]]> '000000000'
+		GROUP BY A.YYYYMM, A.ITEM, B.NAME, B.SPEC1, B.JIJIC, SF_ITNBR_TOT(B.COMPANY, B.ITNBR, '10'), A.STOCK_PRICE,A.LASTDEPS_DATE,A.LASTOUT_DATE,B.JEJOS,C.AGE_PRICE, B.COMPANY
+		ORDER BY A.ITEM, A.YYYYMM
+	</select>
+	
+	<!-- 자재수불 집계표(월별 금액집계표) -->
+	<select id = "peg08_list2" parameterType="hashmap" resultType="hashmap">
+		SELECT  AA.YYYYMM, 
+			        ROUND(MAX(AA.BASIC_AMT)) BASIC_AMT,
+			        ROUND(MAX(AA.DEPS_AMT)) DEPS_AMT,
+			        ROUND(MAX(AA.OUT_AMT)) OUT_AMT,
+			        ROUND(MAX(AA.STOCK_AMT)) STOCK_AMT,
+			        SUM(BB.TOT_1) TOT_1,
+			        SUM(BB.TOT_2) TOT_2,
+			        SUM(BB.VAT) VAT,
+		        	AA.COMPANY
+		FROM    (SELECT     YYYYMM,
+			        SUM(NVL(BASIC_AMT,0))     BASIC_AMT,
+			        SUM(NVL(DEPS_AMT,0))    DEPS_AMT,
+			        SUM(NVL(OUT_AMT,0))    OUT_AMT,
+			        SUM(NVL(STOCK_AMT,0))    STOCK_AMT,
+			        COMPANY
+			        FROM  PEG01_MST 
+			        WHERE YYYYMM BETWEEN SUBSTR(#{yyyymm},1,4)||'01' AND REPLACE(substr(#{yyyymm}, 1, 7), '-', '')
+			        AND COMPANY = #{company_cd}
+			        AND PLANT = #{plant_cd}
+			        GROUP BY  YYYYMM , COMPANY
+			        ) AA, 
+			        ( SELECT A.TRM_YM YYYYMM,
+			        A.VENDOR,
+			        SUM(DECODE(C.MCCOD,'1',A.DEPS_AMT,0)) TOT_1,
+			        SUM(DECODE(C.MCCOD,'2',A.DEPS_AMT,0)) TOT_2,
+			        ROUND(SUM(DECODE(C.MCCOD,'1',A.DEPS_AMT,0)) * 0.1, 0) VAT
+			        FROM PEH01_MST A, SALE.SAB01_MST C
+			        WHERE A.COMPANY = #{company_cd}
+			        AND A.PLANT   = #{plant_cd}
+			        AND A.TRM_YM BETWEEN SUBSTR(#{yyyymm},1,4)||'01' AND REPLACE(substr(#{yyyymm}, 1, 7), '-', '')
+			        AND A.COMPANY = C.COMPANY
+			        AND A.ITEM = C.ITNBR
+			        GROUP BY A.TRM_YM, A.VENDOR
+			        ) BB
+		WHERE AA.YYYYMM = BB.YYYYMM
+		GROUP BY AA.YYYYMM, AA.COMPANY
+		ORDER BY AA.YYYYMM
+	</select>
+	
+	<!-- 자재수불 집계표(마감(전)집계표) -->
+	<select id = "peg08_list3" parameterType="hashmap" resultType="hashmap">
+		SELECT *
+			FROM(
+			  SELECT 	A.VENDOR VENDOR,
+			             	B.BY_NM BY_NM,
+			            	B.BU_CD BU_CD,
+				            B.BY_TEL_NO,
+				            B.BY_PRSN,
+				            SUM(DECODE(C.MCCOD,'1',A.DEPS_AMT,0)) TOT_1,
+				            ROUND(SUM(DECODE(C.MCCOD,'1',A.DEPS_AMT,0)) * 0.1, 0) TOT_1_R,
+				            SUM(DECODE(C.MCCOD,'2',A.DEPS_AMT,0)) TOT_2,
+				            SUM(NVL(A.DEPS_AMT,0))  QTY,
+				            A.COMPANY
+			    FROM PEB01_MST A, ACNT.SAA_BUYER B, SALE.SAB01_MST C
+			   	WHERE A.COMPANY = #{company_cd}
+			    AND A.PLANT   = #{plant_cd}
+			    AND A.STEP_STATUS = '50' 
+			    AND A.ITEM = C.ITNBR
+			    AND A.DEPS_DATE BETWEEN TRUNC(TO_DATE(REPLACE(substr(#{yyyymm}, 1, 10), '-', '')), 'MONTH') AND LAST_DAY(TO_DATE(REPLACE(substr(#{yyyymm}, 1, 10), '-', '')))
+			    AND B.BY_CD = A.VENDOR
+				GROUP BY A.VENDOR, B.BY_NM, B.BU_CD, B.BY_TEL_NO, B.BY_PRSN, A.COMPANY
+			) T
+			WHERE QTY <![CDATA[ <> ]]> 0
+			ORDER BY T.BY_NM
+	</select>
+	
+	<!-- 자재수불 집계표(마감(후)집계표) -->
+	<select id = "peg08_list4" parameterType="hashmap" resultType="hashmap">
+		SELECT *
+				FROM(
+				        SELECT  A.VENDOR,
+					                B.BY_NM,
+					                B.BU_CD,
+					                B.BY_TEL_NO,
+					                B.BY_PRSN,
+					                SUM(NVL(A.TAX_AMT,0)) VAT,
+					                SUM(DECODE(C.MCCOD,'1',A.DEPS_AMT,0)) TOT_1,
+					                ROUND(SUM(DECODE(C.MCCOD,'1',A.DEPS_AMT,0)) * 0.1, 0) TOT_1_R,
+					                SUM(DECODE(C.MCCOD,'2',A.DEPS_AMT,0)) TOT_2,
+					                SUM(NVL(A.PAY_AMT,0))  QTY,
+					                A.TAX_WORK,
+					                A.COMPANY
+				        FROM PEH01_MST A, ACNT.SAA_BUYER B, SALE.SAB01_MST C
+				        WHERE A.COMPANY = #{company_cd}
+				        AND A.PLANT   = #{plant_cd}
+				        AND A.ITEM = C.ITNBR
+				        AND A.TRM_YM = REPLACE(substr(#{yyyymm}, 1, 7), '-', '')
+				        AND B.BY_CD = A.VENDOR
+				        GROUP BY A.VENDOR, B.BY_NM, B.BU_CD, B.BY_TEL_NO, B.BY_PRSN, A.TAX_WORK, A.COMPANY
+				) T
+				WHERE QTY <![CDATA[ <> ]]> 0
+				ORDER BY T.BY_NM
+	</select>
+	
+	<!-- 자재수불 집계표(실사용 재고리스트) -->
+	<select id = "peg08_list5" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.YYYYMM,
+			        A.ITEM,
+			        B.NAME ITEM_NAME_K,
+			        B.SPEC1 NORM1,
+			        B.JIJIC,
+			        SF_ITNBR_TOT(B.COMPANY, B.ITNBR, '10') STOCK_UM,
+			        A.STOCK_PRICE,
+			        A.LASTDEPS_DATE,
+			        A.LASTOUT_DATE,
+			        B.JEJOS,
+			        SUM(A.BASIC_QTY) BASIC_QTY,
+			        SUM(A.BASIC_AMT) BASIC_AMT,
+			        SUM(A.DEPS_QTY) DEPS_QTY,
+			        SUM(A.DEPS_AMT) DEPS_AMT,
+			        SUM(A.OUT_QTY) OUT_QTY,
+			        DECODE(SUM(A.OUT_QTY),0,0,SUM(A.OUT_AMT)) OUT_AMT,
+			        DECODE(SUM(A.OUT_QTY),0,SUM(A.OUT_AMT),0) OUT_AMT_1,
+			        DECODE(SUM(A.STOCK_AMT),0,0,SUM(A.STOCK_QTY)) STOCK_QTY,
+			        SUM(A.STOCK_AMT) STOCK_AMT,
+			        C.AGE_PRICE,
+			        B.COMPANY
+		FROM SALE.SAB01_MST B, PAD01_MST C,
+			    (SELECT YYYYMM, ITEM, TRUNC(STOCK_PRICE, 4) STOCK_PRICE,
+			            LASTDEPS_DATE, LASTOUT_DATE,                                            
+			            SUM(NVL(BASIC_QTY,0)) BASIC_QTY,
+			            SUM(NVL(BASIC_AMT,0)) BASIC_AMT,
+			            SUM(NVL(DEPS_QTY,0)) DEPS_QTY,
+			            SUM(NVL(DEPS_AMT,0)) DEPS_AMT,
+			            SUM(NVL(OUT_QTY,0)) OUT_QTY,
+			            SUM(NVL(OUT_AMT,0)) OUT_AMT,
+			            SUM(NVL(STOCK_QTY,0)) STOCK_QTY,
+			            SUM(NVL(STOCK_AMT,0)) STOCK_AMT
+			     FROM PROD.PEG01_MST                                                         
+			     WHERE COMPANY = #{company_cd}
+			     AND PLANT = #{plant_cd}
+			     AND YYYYMM = REPLACE(substr(#{yyyymm}, 1, 7), '-', '')
+			     GROUP BY YYYYMM, ITEM, STOCK_PRICE, LASTDEPS_DATE, LASTOUT_DATE, COMPANY) A                             
+		WHERE B.COMPANY = #{company_cd} 
+		AND A.ITEM = B.ITNBR
+		AND B.ITNBR = C.ITNBR
+		AND SUBSTR(B.IFORM,1,1) = 'A'
+		AND (A.BASIC_QTY <![CDATA[ <> ]]> 0 OR A.DEPS_QTY <![CDATA[ <> ]]> 0 OR A.OUT_QTY <![CDATA[ <> ]]> 0 OR A.STOCK_QTY <![CDATA[ <> 0 ]]> )
+		AND A.ITEM <![CDATA[ <> ]]> '000000000'
+		AND A.STOCK_QTY <![CDATA[ <> ]]> 0
+		GROUP BY A.YYYYMM, A.ITEM, B.NAME, B.SPEC1, B.JIJIC, SF_ITNBR_TOT(B.COMPANY, B.ITNBR, '10'), A.STOCK_PRICE,A.LASTDEPS_DATE,A.LASTOUT_DATE,B.JEJOS,C.AGE_PRICE, B.COMPANY
+		ORDER BY  A.ITEM, A.YYYYMM
+	</select>
+	
+	<!-- 자재수불 집계표(기간별/자재별 수불집계표) -->
+	<select id = "peg08_list6" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.YYYYMM,
+			        A.ITEM,
+			        B.NAME  ITEM_NAME_K,
+			        B.SPEC1 NORM1,
+			        B.JIJIC JIJIC,
+			        SF_ITNBR_TOT(B.COMPANY, B.ITNBR, '10') STOCK_UM,
+			        A.STOCK_PRICE,
+			        A.LASTDEPS_DATE,
+			        A.LASTOUT_DATE,
+			        B.JEJOS,
+			        SUM(A.BASIC_QTY) BASIC_QTY,
+			        SUM(A.BASIC_AMT) BASIC_AMT,
+			        SUM(A.DEPS_QTY) DEPS_QTY,
+			        SUM(A.DEPS_AMT) DEPS_AMT,
+			        SUM(A.OUT_QTY) OUT_QTY,
+			        DECODE(SUM(A.OUT_QTY),0,0,SUM(A.OUT_AMT)) OUT_AMT,
+			        DECODE(SUM(A.OUT_QTY),0,SUM(A.OUT_AMT),0) OUT_AMT_1,
+			        DECODE(SUM(A.STOCK_AMT),0,0,SUM(A.STOCK_QTY)) STOCK_QTY,
+			        SUM(A.STOCK_AMT) STOCK_AMT,
+			        C.AGE_PRICE,
+			        B.COMPANY
+		FROM SALE.SAB01_MST B, PAD01_MST C,
+		(SELECT YYYYMM, ITEM, TRUNC(STOCK_PRICE, 4) STOCK_PRICE,
+		        LASTDEPS_DATE, LASTOUT_DATE,                                            
+		        SUM(NVL(BASIC_QTY,0)) BASIC_QTY,
+		        SUM(NVL(BASIC_AMT,0)) BASIC_AMT,
+		        SUM(NVL(DEPS_QTY,0)) DEPS_QTY,
+		        SUM(NVL(DEPS_AMT,0)) DEPS_AMT,
+		        SUM(NVL(OUT_QTY,0)) OUT_QTY,
+		        SUM(NVL(OUT_AMT,0)) OUT_AMT,
+		        SUM(NVL(STOCK_QTY,0)) STOCK_QTY,
+		        SUM(NVL(STOCK_AMT,0)) STOCK_AMT
+		FROM PROD.PEG01_MST                                                         
+		WHERE COMPANY = #{company_cd}
+		AND PLANT = #{plant_cd}
+		AND YYYYMM <![CDATA[ >= ]]> REPLACE(substr(#{yyyymm}, 1, 7), '-', '')
+		AND YYYYMM <![CDATA[ <= ]]> REPLACE(substr(#{yyyymm2}, 1, 7), '-', '')
+		GROUP BY YYYYMM, ITEM, STOCK_PRICE, LASTDEPS_DATE, LASTOUT_DATE, COMPANY) A                             
+		WHERE B.COMPANY = #{company_cd} 
+		AND A.ITEM = B.ITNBR
+		AND B.ITNBR = C.ITNBR
+		AND SUBSTR(B.IFORM,1,1) = 'A'
+		AND (A.BASIC_QTY <![CDATA[ <> ]]> 0 OR A.DEPS_QTY <![CDATA[ <> ]]> 0 OR A.OUT_QTY <![CDATA[ <> ]]> 0 OR A.STOCK_QTY <![CDATA[ <> 0 ]]> )
+		AND A.ITEM <![CDATA[ <> ]]> '000000000'
+		GROUP BY A.YYYYMM, A.ITEM, B.NAME, B.SPEC1, B.JIJIC, SF_ITNBR_TOT(B.COMPANY, B.ITNBR, '10'), A.STOCK_PRICE,A.LASTDEPS_DATE,A.LASTOUT_DATE,B.JEJOS,C.AGE_PRICE, B.COMPANY
+		ORDER BY  A.ITEM, A.YYYYMM
+	</select>
+	
 	
 	<!-- 월별 수입검사현황 조회 -->
 	<select id = "pha03_list" parameterType="hashmap" resultType="hashmap">
@@ -1135,16 +2018,16 @@
 			        C.MO_NO,
 			        SF_PJTNO_DATA(A.COMPANY, A.PLANT, SUBSTR(C.MO_NO,1,8), '1') PJTNO_NM,
 			        C.LOT_NO,
-			        C.QC_DATE,
+			        TO_CHAR(C.QC_DATE, 'YYYY-MM-DD') QC_DATE,
 			        A.QC_NO,
 			        C.GUBUN,
 			        C.VENDOR,  
 			        A.ITEM,   
 			        B.NAME  ITEM_NAME_K,   
 			        B.SPEC1 NORM1,  
-			        nvl(C.QCREQ_QTY,0)    QCREQ_QTY,
-			        nvl(C.QC_QTY,0)   QC_QTY,
-			        nvl(A.ERR_QTY,0)   ERR_QTY,
+			        nvl(C.QCREQ_QTY,0) QCREQ_QTY,
+			        nvl(C.QC_QTY,0) QC_QTY,
+			        nvl(A.ERR_QTY,0) ERR_QTY,
 			        C.CREATE_BY, 
 			        A.INS_KIND,     
 			        A.ERR_TAG, 

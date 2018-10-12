@@ -188,4 +188,35 @@ public class ComponentService {
 	public List<Map<String, Object>> commonCode29(Map<String, Object> map){
 		return componentDao.commonCode29(map);
 	}
+	
+	//상태
+	public List<Map<String, Object>> commonCode30(Map<String, Object> map){
+		return componentDao.commonCode30(map);
+	}
+	
+	//조치구분
+	public List<Map<String, Object>> commonCode31(Map<String, Object> map){
+		return componentDao.commonCode31(map);
+	}
+	
+	//검사결과
+	public List<Map<String, Object>> commonCode32(Map<String, Object> map){
+		return componentDao.commonCode32(map);
+	}
+	
+	//불량항목
+	public List<Map<String, Object>> commonCode33(Map<String, Object> map){
+		return componentDao.commonCode33(map);
+	}
+	
+	//검사종류
+	public List<Map<String, Object>> commonCode34(Map<String, Object> map){
+		return componentDao.commonCode34(map);
+	}
+	
+	//검사구분
+	public List<Map<String, Object>> commonCode35(Map<String, Object> map){
+		return componentDao.commonCode35(map);
+	}
+	
 }

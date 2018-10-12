@@ -155,11 +155,171 @@ public class ApiController {
 		common2(response, list);
 	}
 	
-	// 월 발주현황(P/O별 발주상세내역) 조회
+	//자재투입 상세분석표(수주건별 분석표)
+	@RequestMapping("/pdd/pdd06_list1")
+	public void getPdd06_list1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdd06_list1(map);
+		common2(response, list);
+	}
+	
+	//자재투입 상세분석표(월별 분석표)
+	@RequestMapping("/pdd/pdd06_list2")
+	public void getPdd06_list2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdd06_list2(map);
+		common2(response, list);
+	}
+	
+	//월 발주현황(P/O별 발주상세내역) 조회
 	@RequestMapping("/pdb/pdb13_list1")
 	public void getPdb13_list1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
 		map = common1(request, response, map);
 		List<Map<String, Object>> list = apiService.pdb13_list1(map);
+		common2(response, list);
+	}
+	
+	// 월 발주현황(업체별 발주집계표) 생성 및 조회
+	@RequestMapping("/pdb/pdb13_list2")
+	public void getPdb13_list2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdb13_list2(map);
+		common2(response, list);
+	}
+	
+	// 월 발주현황(PJT별 발주집계표) 조회
+	@RequestMapping("/pdb/pdb13_list3")
+	public void getPdb13_list3(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdb13_list3(map);
+		common2(response, list);
+	}
+	
+	// 월 발주현황(품목별 발주 집계표) 생성 및 조회
+	@RequestMapping("/pdb/pdb13_list4")
+	public void getPdb13_list4(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdb13_list4(map);
+		common2(response, list);
+	}
+	
+	// 월 발주현황(업체별 발주내역 총집계표) 조회
+	@RequestMapping("/pdb/pdb13_list5")
+	public void getPdb13_list5(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdb13_list5(map);
+		common2(response, list);
+	}
+	
+	// 월 발주현황(PJT별 발주내역 총집계표) 조회
+	@RequestMapping("/pdb/pdb13_list6")
+	public void getPdb13_list6(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdb13_list6(map);
+		common2(response, list);
+	}
+	
+	//일자별 자재입고 현황 
+	@RequestMapping("/peb/peb14_list1")
+	public void getPeb14_list1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peb14_list1(map);
+		common2(response, list);
+	}
+	
+	//일자별 자재입고 현황(작업지시별 입고현황)
+	@RequestMapping("/peb/peb14_list2")
+	public void getPeb14_list2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peb14_list2(map);
+		common2(response, list);
+	}
+	
+	//일자별 자재입고 현황(거래처별 입고현황)
+	@RequestMapping("/peb/peb14_list3")
+	public void getPeb14_list3(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peb14_list3(map);
+		common2(response, list);
+	}
+	
+	//일자별 자재입고 현황(작업지시별/품번별 입고현황)
+	@RequestMapping("/peb/peb14_list4")
+	public void getPeb14_list4(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peb14_list4(map);
+		common2(response, list);
+	}
+	
+	//설계/발주/입고/출고현황(자재투입진척현황(상세))
+	@RequestMapping("/pec/pec12_list1")
+	public void pec12_list1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pec12_list1(map);
+		common2(response, list);
+	}
+	
+	//설계/발주/입고/출고현황(자재투입진척현황(집계))
+	@RequestMapping("/pec/pec12_list2")
+	public void pec12_list2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pec12_list2(map);
+		common2(response, list);
+	}
+	
+	//부품 입고대기 현황
+	@RequestMapping("/pea/pea03_list")
+	public void pea03_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pea03_list(map);
+		common2(response, list);
+	}
+	
+	//자재수불 집계표(월별/자재별 수불집계표)
+	@RequestMapping("/peg/peg08_list1")
+	public void peg08_list1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peg08_list1(map);
+		common2(response, list);
+	}
+
+	//자재수불 집계표(월별 금액집계표)
+	@RequestMapping("/peg/peg08_list2")
+	public void peg08_list2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peg08_list2(map);
+		common2(response, list);
+	}
+	
+	//자재수불 집계표(마감(전)집계표)
+	@RequestMapping("/peg/peg08_list3")
+	public void peg08_list3(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peg08_list3(map);
+		common2(response, list);
+	}
+	
+	//자재수불 집계표(마감(후)집계표)
+	@RequestMapping("/peg/peg08_list4")
+	public void peg08_list4(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peg08_list4(map);
+		common2(response, list);
+	}
+	
+	//자재수불 집계표(실사용 재고리스트)
+	@RequestMapping("/peg/peg08_list5")
+	public void peg08_list5(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peg08_list5(map);
+		common2(response, list);
+	}
+	
+	//자재수불 집계표(기간별/자재별 수불집계표)
+	@RequestMapping("/peg/peg08_list6")
+	public void peg08_list6(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peg08_list6(map);
 		common2(response, list);
 	}
 	
@@ -234,7 +394,7 @@ public class ApiController {
 					jsonarr.add(jsonobj);
 				}
 				
-				System.out.println("data : " + jsonarr.toString());
+				//System.out.println("data : " + jsonarr.toString());
 				out.println(jsonarr.toString());
 			}catch (Exception ex) {
 				out.println("error");

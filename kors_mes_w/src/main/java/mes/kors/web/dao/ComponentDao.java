@@ -222,5 +222,41 @@ public class ComponentDao {
 		return sqlSession.selectList(ComponentNamespace + ".commonCode29");
 	}
 	
+	//상태 
+	public List<Map<String, Object>> commonCode30(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ComponentNamespace + ".commonCode30");
+	}
+	
+	//조치구분
+	public List<Map<String, Object>> commonCode31(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ComponentNamespace + ".commonCode31");
+	}
+	
+	//검사결과
+	public List<Map<String, Object>> commonCode32(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ComponentNamespace + ".commonCode32");
+	}
+	
+	//불량항목
+	public List<Map<String, Object>> commonCode33(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ComponentNamespace + ".commonCode33");
+	}
+	
+	//검사종류
+	public List<Map<String, Object>> commonCode34(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ComponentNamespace + ".commonCode34");
+	}
+	
+	//검사구분
+	public List<Map<String, Object>> commonCode35(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ComponentNamespace + ".commonCode35");
+	}
+	
 		
 }

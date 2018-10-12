@@ -309,6 +309,54 @@ public class ComponentController {
 		common2(response, list);
 	}
 	
+	//상태 
+	@RequestMapping("/common/component/commonCode30")
+	public void commonCode30(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode30(map);
+		common2(response, list);
+	}
+	
+	//조치구분
+	@RequestMapping("/common/component/commonCode31")
+	public void commonCode31(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode31(map);
+		common2(response, list);
+	}
+	
+	//검사결과
+	@RequestMapping("/common/component/commonCode32")
+	public void commonCode32(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode32(map);
+		common2(response, list);
+	}
+	
+	//불량항목
+	@RequestMapping("/common/component/commonCode33")
+	public void commonCode33(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode33(map);
+		common2(response, list);
+	}
+	
+	//검사종류
+	@RequestMapping("/common/component/commonCode34")
+	public void commonCode34(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode34(map);
+		common2(response, list);
+	}
+	
+	//검사구분
+	@RequestMapping("/common/component/commonCode35")
+	public void commonCode35(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode35(map);
+		common2(response, list);
+	}
+	
 	
 	
 	

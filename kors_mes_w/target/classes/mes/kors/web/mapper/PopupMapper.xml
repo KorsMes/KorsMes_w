@@ -168,7 +168,7 @@
 		SELECT 	PDTNO,
 				 	DRSEQ,
 				 	CONF_DATE,
-				 	SODAT,
+				 	TO_CHAR(SODAT, 'yyyy-mm-dd') SODAT,
 			       	SF_PJTNO_DATA(COMPANY, PLANT, SUBSTR(PDTNO,1,8), '1') PJTNO_NM,
 				 	DRDSC
 		FROM PAE03_HIS

@@ -404,5 +404,77 @@
         AND USE = 'Y'   
         ORDER BY CODE ASC
     </select>
+    
+    <!--상태 -->
+    <select id = "commonCode30" resultType="hashmap">
+		SELECT 	CODE,   
+         			NAME1  
+    	FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+	  	AND GROUP_CD = 'S046'
+	  	AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+    </select>
+    
+    <!-- 조치구분 -->
+    <select id = "commonCode31" resultType="hashmap">
+    	SELECT  CODE,   
+		        	NAME1  
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD= 'P'
+		AND GROUP_CD = 'P704'
+		AND CODE <![CDATA[ <> ]]>  '*'
+		AND  ( SALE."SAA01_MST"."USE" = 'Y' )  
+		ORDER BY CODE ASC
+    </select>
+    
+    <!-- 검사결과 -->
+    <select id = "commonCode32" resultType="hashmap">
+    	SELECT  CODE,   
+		    	    NAME1  
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD= 'P'
+		AND GROUP_CD = 'P706'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND  ( SALE."SAA01_MST"."USE" = 'Y' )  
+		ORDER BY CODE ASC
+    </select>
+        
+    <!-- 불량항목 -->
+    <select id = "commonCode33" resultType="hashmap">
+    	SELECT  CODE,   
+		        	NAME1  
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD= 'P'
+		AND GROUP_CD = 'P711'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND  ( SALE."SAA01_MST"."USE" = 'Y' )  
+		ORDER BY CODE ASC
+    </select>
+        
+    <!-- 검사종류 -->
+    <select id = "commonCode34" resultType="hashmap">
+    	SELECT  CODE,   
+		        	NAME1  
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD= 'P'
+		AND GROUP_CD = 'P705'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND  ( SALE."SAA01_MST"."USE" = 'Y' )  
+		ORDER BY CODE ASC
+    </select>
+        
+    <!-- 검사구분 -->
+    <select id = "commonCode35" resultType="hashmap">
+    	SELECT  CODE,   
+		        	'['||CODE||']'||NAME1   NAME1
+		FROM SALE.SAA01_MST
+		WHERE GROUP_CD = 'P119'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND SYS_CD = 'P'
+		ORDER BY CODE ASC
+		    	
+    </select>    
 	
 </mapper>	
