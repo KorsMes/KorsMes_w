@@ -35,6 +35,11 @@ public class ApiService {
 		return apiDao.scb10_list(map);
 	}
 	
+	//PJT 수주내역 조회
+	public List<Map<String, Object>> sea02_list(Map<String, Object> map){
+		return apiDao.sea02_list(map);
+	}
+	
 	//PJT 수주내역 조회 (상세) 조회
 	public List<Map<String, Object>> sea12_list1(Map<String, Object> map){
 		return apiDao.sea12_list1(map);

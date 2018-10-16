@@ -258,5 +258,17 @@ public class ComponentDao {
 		return sqlSession.selectList(ComponentNamespace + ".commonCode35");
 	}
 	
+	//공정
+	public List<Map<String, Object>> commonCode36(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ComponentNamespace + ".commonCode36");
+	}
+	
+	//견적상태
+	public List<Map<String, Object>> commonCode37(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ComponentNamespace + ".commonCode37");
+	}
+	
 		
 }

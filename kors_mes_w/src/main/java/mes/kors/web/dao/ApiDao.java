@@ -38,6 +38,12 @@ public class ApiDao {
 		return sqlSession.selectList(ApiNamespace + ".scb10_list", map);
 	}
 	
+	//PJT 수주내역 조회
+	public List<Map<String, Object>> sea02_list(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ApiNamespace + ".sea02_list", map);
+	}
+	
 	//PJT 수주내역 조회 (상세) 조회
 	public List<Map<String, Object>> sea12_list1(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
@@ -107,13 +113,15 @@ public class ApiDao {
 	//자재투입 상세분석표(수주건별 분석표)
 	public List<Map<String, Object>> pdd06_list1(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
-		return sqlSession.selectList(ApiNamespace + ".pdd06_list1", map);
+		sqlSession.selectList(ApiNamespace + ".pdd06_list1_1", map);
+		return sqlSession.selectList(ApiNamespace + ".pdd06_list1_2", map);
 	}
 	
 	//자재투입 상세분석표(월별 분석표)
 	public List<Map<String, Object>> pdd06_list2(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
-		return sqlSession.selectList(ApiNamespace + ".pdd06_list2", map);
+		sqlSession.selectList(ApiNamespace + ".pdd06_list2_1", map);
+		return sqlSession.selectList(ApiNamespace + ".pdd06_list2_2", map);
 	}
 	
 	// 월 발주현황(P/O별 발주상세내역) 조회

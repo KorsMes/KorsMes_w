@@ -67,6 +67,14 @@ public class ApiController {
 		common2(response, list);
 	}
 	
+	//PJT 수주내역 조회
+	@RequestMapping("/sea/sea02_list")
+	public void getSea02_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.sea02_list(map);
+		common2(response, list);
+	}
+	
 	//PJT 수주내역 조회 (상세) 조회
 	@RequestMapping("/sea/sea12_list1")
 	public void getSea12_list1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {

@@ -474,7 +474,29 @@
 		AND CODE <![CDATA[ <> ]]> '*'
 		AND SYS_CD = 'P'
 		ORDER BY CODE ASC
-		    	
     </select>    
+    
+    <!--공정  -->
+	<select id = "commonCode36" resultType="hashmap">
+		SELECT  CODE,
+			        '['||CODE||']'||NAME1 NAME1,
+			        NAME2
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD = 'P'
+		AND GROUP_CD = 'Y0'
+		AND CODE <![CDATA[ <> ]]> '*'
+	</select>	
 	
+	<!-- 견적상태 -->
+	<select id = "commonCode37" resultType="hashmap">
+		SELECT  CODE,   
+		        	NAME1  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'P'
+		AND GROUP_CD = 'Z5'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+				
+	</select>
 </mapper>	

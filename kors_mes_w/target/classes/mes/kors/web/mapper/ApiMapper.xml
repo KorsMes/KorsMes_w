@@ -23,7 +23,7 @@
 		FROM SALE.SAB01_MST A, PAF03_MST B
 		WHERE B.COMPANY = #{company_cd} 
 		<if test = "itnbr != null">
-		    AND    B.ITEM >= #{itnbr}
+		    AND    B.ITEM <![CDATA[ >= ]]> #{itnbr}
 		</if> 
 		<if test = "by_cd != null">
 		    AND  (B.VENDOR  = #{by_cd} OR #{by_cd} = '*')
@@ -86,12 +86,12 @@
 	
 	<!-- 견적서 발행(을지) -->
 	<select id = "scb10_list" parameterType="hashmap" resultType="hashmap">
-		SELECT  GRPNO,
+		SELECT  DECODE(PNLNO, 0, TO_CHAR(GRPNO),  TO_CHAR(GRPNO) || '-' || PNLNO ) GRPNO,
 			        PNLNO,
 			        ITDSC,
-			        SOQTY1,
-			        SOWPRC1 * DECODE(UPPER(VAT_YN), 'Y', 1.1, 1.0) SOWPRC1,
-			        SOWAMT1 * DECODE(UPPER(VAT_YN), 'Y', 1.1, 1.0) SOWAMT1,
+			        DECODE(PNLNO, 0, '', SOQTY1) SOQTY1,
+			        DECODE(PNLNO, 0, '', SOWPRC1 * DECODE(UPPER(VAT_YN), 'Y', 1.1, 1.0)) SOWPRC1,
+			        DECODE(PNLNO, 0, '', SOWAMT1 * DECODE(UPPER(VAT_YN), 'Y', 1.1, 1.0)) SOWAMT1,
 			        ITNBR,
 			        GU0,
 			        VAT_YN,
@@ -176,6 +176,112 @@
 		AND GU0 = '1' )
 		)
 		ORDER BY GRPNO, PNLNO
+	</select>
+	
+	<!-- PJT 수주내역 조회 -->
+	<select id = "sea02_list" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.COMPANY,
+			        A.PLANT,
+			        A.PJTNO,
+			        A.SOFNO,
+			        A.PJTNM,
+			        A.DPTNO,
+			        A.CVCOD,
+			        A.CONTR,
+			        A.ITGRP,
+			        A.PJAMT,
+			        A.MNHCD,
+			        TO_CHAR(A.SODAT, 'YYYY-MM-DD') SODAT,
+			        TO_CHAR(A.CODAT, 'YYYY-MM-DD') CODAT,
+			        TO_CHAR(A.NADAT, 'YYYY-MM-DD') NADAT,
+			        A.SUJU_GU,
+			        A.PRODUCT_GU,
+			        A.STATUS,
+			        A.MV1,
+			        A.BOGO,
+			        A.FRMRT,
+			        A.SWRT,
+			        A.MCRT,
+			        A.GSRT,
+			        A.OUTORD,
+			        A.OUTAMT,
+			        A.EPNO,
+			        A.SUNAM,
+			        A.BANAM,
+			        A.HADAT,
+			        A.GATER,
+			        A.SAVCD,
+			        A.DLYA1,
+			        A.DLYA2,
+			        A.CONA1,
+			        A.CONA2,
+			        A.MANA1,
+			        A.MANA2,
+			        A.HOLA1,
+			        A.HOLA2,
+			        A.BALTE,
+			        A.BALLV,
+			        A.BALNA,
+			        A.FILTE,
+			        A.FILLV,
+			        A.FILNA,
+			        A.CERTM,
+			        A.PACKM,
+			        A.INDOM,
+			        A.REMK1,
+			        A.REMK2,
+			        A.REMK3,
+			        A.REMK4,
+			        A.MATRA,
+			        A.MATMT,
+			        A.DRNOK,
+			        A.RENOK,
+			        A.PDCOM,
+			        A.PACOM,
+			        A.CHAMT,
+			        A.MAAMT,
+			        A.SUAMT,
+			        A.SOMAH,
+			        A.SIMAH,
+			        A.SORAT,
+			        A.PDRM1,
+			        A.PDRM2,
+			        A.ONDOM,
+			        TO_CHAR(A.DRDAT, 'YYYY-MM-DD') DRDAT,
+			        TO_CHAR(A.LASDT, 'YYYY-MM-DD') LASDT,
+			        TO_CHAR(A.PDRCD, 'YYYY-MM-DD') PDRCD,
+			        TO_CHAR(A.POJIT, 'YYYY-MM-DD') POJIT,
+			        A.CHNAD,
+			        A.MAVAT,
+			        TO_CHAR(A.REDAT, 'YYYY-MM-DD') REDAT,
+			        TO_CHAR(A.QCDAT, 'YYYY-MM-DD') QCDAT,
+			        TO_CHAR(A.PDRCD1, 'YYYY-MM-DD') PDRCD1,
+			        A.MV2,
+			        A.WACOM,
+			        A.POT,
+			        A.CANCEL_YN,  
+			        TO_CHAR(A.CONFIRM_DT, 'YYYY-MM-DD') CONFIRM_DT,
+			        TO_CHAR(A.CANCEL_DT, 'YYYY-MM-DD') CANCEL_DT,
+			        TO_CHAR(A.BOMDT, 'YYYY-MM-DD') BOMDT,
+			        TO_CHAR(A.IPGODT, 'YYYY-MM-DD') IPGODT,
+			        A.MATMT2,
+			        A.STAT,    
+			        A.CREATE_BY,  
+			        TO_CHAR(A.CREATE_DATE, 'YYYY-MM-DD') CREATE_DATE,
+			        A.UPDATE_BY,  
+			        TO_CHAR(A.UPDATE_DATE, 'YYYY-MM-DD') UPDATE_DATE,
+		(SELECT COUNT(*) FROM SCA09_DTL WHERE COMPANY = A.COMPANY AND PLANT=  A.PLANT AND PJTNO = A.PJTNO) PDTNO
+		FROM SCA09_MST A
+		WHERE A.COMPANY = #{company_cd}
+		AND A.PLANT   = #{plant_cd}
+		<if test="pjtno_fr != null and pjtno_fr != '' and pjtno_to != null and pjtno_to != ''">
+			AND SUBSTR(A.PJTNO,3,6)  <![CDATA[ <= ]]> DECODE(#{pjtno_fr}, NULL, 'ZZZZZZZZ', SUBSTR(#{pjtno_to},3,6))
+		</if>
+		<if test="status != null and status != ''">
+			AND (A.STATUS <![CDATA[ >= ]]> DECODE(#{status}, NULL, '00', #{status}) AND A.STATUS <![CDATA[ <= ]]> #{status}||'ZZ')
+		</if>
+		AND TO_CHAR(A.SODAT,'yyyymm') BETWEEN REPLACE(substr(#{fr_yymm}, 1, 7), '-', '') AND REPLACE(substr(#{to_yymm}, 1, 7), '-', '')
+		ORDER BY SUBSTR(A.PJTNO,3,6) DESC
 	</select>
 	
 	<!-- PJT 수주내역 조회 (상세) 조회 -->
@@ -1017,8 +1123,14 @@
 		]]>
 	</select>
 	
+	<!-- 자재투입 상세분석표(수주건별 분석표) 데이터 생성 -->
+	<select id = "pdd06_list1_1" parameterType="hashmap" resultType="hashmap">
+		{ CALL SP_PDD06_RETRIEVE1(#{company_cd}, #{plant_cd}, #{user_id}, #{yymm}) }
+	</select>
+	
+	
 	<!-- 자재투입 상세분석표(수주건별 분석표) -->
-	<select id = "pdd06_list1" parameterType="hashmap" resultType="hashmap">
+	<select id = "pdd06_list1_2" parameterType="hashmap" resultType="hashmap">
 		SELECT  COMPANY,
 			        PLANT,
 			        PJTNO,
@@ -1045,8 +1157,13 @@
 		ORDER BY COMPANY, PLANT, GUBUN, PJT_SEQ, PJTNO
 	</select>
 	
+	<!-- 자재투입 상세분석표(월별 분석표) 데이터 생성 -->
+	<select id = "pdd06_list2_1" parameterType="hashmap" resultType="hashmap">
+		{ CALL SP_PDD06_RETRIEVE2(#{company_cd}, #{plant_cd}, #{user_id}, #{yymm}) }
+	</select>
+	
 	<!-- 자재투입 상세분석표(월별 분석표) -->
-	<select id = "pdd06_list2" parameterType="hashmap" resultType="hashmap">
+	<select id = "pdd06_list2_2" parameterType="hashmap" resultType="hashmap">
 		SELECT  COMPANY,
 			        PLANT,
 			        YYMM,
@@ -1061,13 +1178,13 @@
 			         AND USER_ID = #{user_id} 
 			         AND YYMM <![CDATA[ <> ]]> 'TOTAL'
 			         AND GUBUN = 'A0'
-			         AND NVL(IN_AMT,0)    > 0
+			         AND NVL(IN_AMT,0) <![CDATA[ > ]]> 0
 			        ) MAX_YYMM,
 			        USER_ID
 		FROM PDD06_TMP02
 		WHERE COMPANY = #{company_cd}
 		AND PLANT = #{plant_cd}
-		AND USER_ID = #{user_id} 
+		AND USER_ID = #{user_id}
 		ORDER BY COMPANY, PLANT, GUBUN, YYMM
 	</select>
 

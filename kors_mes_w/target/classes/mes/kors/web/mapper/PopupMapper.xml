@@ -8,15 +8,14 @@
 	
 	<!-- 품목코드 정보 조회 -->
 	<select id = "itnbr_list" parameterType="hashmap" resultType="hashmap">
-		<![CDATA[
 			SELECT  COMPANY COMPANY,   
 				        ITNBR   ITNBR,   
 				        NAME    ITDSC,
 				        SPEC1   ISPEC1,
 				        UNMSR   UNMSR,
 				        JIJIC   JIJIC,
-				        (SELECT NAME1 FROM SAA01_MST WHERE CODE = A.IFORM AND SYS_CD = 'S' AND GROUP_CD = 'Y6' AND CODE <> '*' AND SUBSTR(CODE, 1,1) = 'A' AND USE = 'Y') IFORM_NM,
-				        (SELECT NAME1 FROM SAA01_MST WHERE SYS_CD = 'P' AND GROUP_CD = 'D0' AND CODE <> '*' AND USE = 'Y' AND A.UNMSR = CODE) UNMSR_NM
+				        (SELECT NAME1 FROM SAA01_MST WHERE CODE = A.IFORM AND SYS_CD = 'S' AND GROUP_CD = 'Y6' AND CODE <![CDATA[ <> ]]> '*' AND SUBSTR(CODE, 1,1) = 'A' AND USE = 'Y') IFORM_NM,
+				        (SELECT NAME1 FROM SAA01_MST WHERE SYS_CD = 'P' AND GROUP_CD = 'D0' AND CODE <![CDATA[ <> ]]> '*' AND USE = 'Y' AND A.UNMSR = CODE) UNMSR_NM
 			FROM SALE.SAB01_MST A
 			WHERE COMPANY = #{company_cd}
 				AND A.ITNBR LIKE #{itnbr}||'%'
@@ -24,9 +23,9 @@
 				AND NVL(A.SPEC1,'%') LIKE '%'||#{spec1}||'%'
 				AND NVL(A.JIJIC,'%') LIKE '%'||#{jijic}||'%'
 				AND NVL(A.IFORM,'%') LIKE '%'||#{iform}||'%'
-				AND A.SEC_CASTRATE <> 'Y'
+				AND A.SEC_CASTRATE <![CDATA[ <> ]]> 'Y'
+		    	AND ROWNUM <![CDATA[ < ]]> #{page} * 30+1
 			ORDER BY ITNBR, IFORM
-		]]>
 	</select>
 	
 	
@@ -167,7 +166,7 @@
 	<select id = "pjtno_list2" parameterType="hashmap" resultType="hashmap">
 		SELECT 	PDTNO,
 				 	DRSEQ,
-				 	CONF_DATE,
+				 	TO_CHAR(CONF_DATE, 'YYYY-MM-DD') CONF_DATE,
 				 	TO_CHAR(SODAT, 'yyyy-mm-dd') SODAT,
 			       	SF_PJTNO_DATA(COMPANY, PLANT, SUBSTR(PDTNO,1,8), '1') PJTNO_NM,
 				 	DRDSC
@@ -193,7 +192,7 @@
 			        A.VENDOR VENDOR_NAME, 
 			        A.PUR_STATUS,  
 			        A.DELV_PLANT,   
-			        A.DELV_DATE,   
+			        TO_CHAR(A.DELV_DATE, 'YYYY-MM-DD') DELV_DATE,   
 			        A.PLAN_YM,
 			        TO_CHAR(A.PUR_DATE, 'yyyy-mm-dd') PUR_DATE
 		FROM PDA04_MST A
@@ -312,6 +311,7 @@
 			            </if>
 			            ) B
 			            WHERE A.JEJOS = B.BY_CD(+)
+			            AND ROWNUM <![CDATA[ < ]]> #{page} * 30+1
 	</select>
 	
 </mapper>	

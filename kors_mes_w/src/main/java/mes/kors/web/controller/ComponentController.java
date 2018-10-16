@@ -357,7 +357,22 @@ public class ComponentController {
 		common2(response, list);
 	}
 	
+	//공정
+	@RequestMapping("/common/component/commonCode36")
+	public void commonCode36(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode36(map);
+		common2(response, list);
+	}
 	
+	
+	//견적상태
+	@RequestMapping("/common/component/commonCode37")
+	public void commonCode37(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode37(map);
+		common2(response, list);
+	}
 	
 	
 	

@@ -219,4 +219,14 @@ public class ComponentService {
 		return componentDao.commonCode35(map);
 	}
 	
+	//공정
+	public List<Map<String, Object>> commonCode36(Map<String, Object> map){
+		return componentDao.commonCode36(map);
+	}
+	
+	//견적상태
+	public List<Map<String, Object>> commonCode37(Map<String, Object> map){
+		return componentDao.commonCode37(map);
+	}
+	
 }
