@@ -222,7 +222,7 @@
 	<!-- pjt번호3 정보 조회 -->
 	<select id = "pjtno_list3" parameterType="hashmap" resultType="hashmap">
 		SELECT	DISTINCT A.PLANT,
-					A.PDJIT YMD		,
+					 TO_CHAR(A.PDJIT, 'YYYY-MM-DD') YMD		,
 					A.PDTNO MO_NO		,
 					'1' URG_TAG	, 
 					A.STATUS MO_STATUS,

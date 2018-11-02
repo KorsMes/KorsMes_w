@@ -31,6 +31,11 @@
 			<value>WEB-INF/properties/jdbc.properties</value>
 		</property>
 	</bean>
+	
+	
+	
+	
+	
 	<!-- dataSourceSpied -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="${jdbc.driverClass}"/>
@@ -62,7 +67,16 @@
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 	
+	
+	
+	
 	<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	
+	
+	
+	
+	
+	
 	<!-- dataSourceSpied2 -->
 	<bean id="dataSourceSpied2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="${jdbc.driverClass}"/>
@@ -93,6 +107,47 @@
 	<bean id="transactionManager2" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource2"></property>
 	</bean>
+	
+	
+	
+	
+	
+	<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	
+	
+	
+		
+	<!-- dataSourceSpied3 -->
+	<bean id="dataSourceSpied3" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClass}"/>
+		<property name="url" value="${jdbc.url3}"/>
+		<property name="username" value="${jdbc.username3}"/>
+		<property name="password" value="${jdbc.password3}"/>
+	</bean>
+	
+	<bean id="dataSource3" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="dataSourceSpied3" />
+		<property name="logFormatter">
+            <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+                <property name="loggingType" value="MULTI_LINE" />
+                <property name="sqlPrefix" value="SQL:::" />
+            </bean>
+        </property>
+	</bean>
+
+	<bean id="sqlSessionFactory3" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource3"/>
+		<property name="configLocation" value="WEB-INF/spring/mybatis/mybatis-config.xml"/>
+	</bean>
+	
+	<bean id="sqlSession3" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory3"/>
+	</bean>
+	
+	<bean id="transactionManager3" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource3"></property>
+	</bean>
+	
 	
 
 </beans>

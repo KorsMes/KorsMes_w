@@ -16,6 +16,9 @@ public class DSManager {
 	@Inject
 	SqlSession sqlSession2;
 	
+	@Inject
+	SqlSession sqlSession3;
+	
 	public SqlSession getDS(Map<String, Object> map) {
 		SqlSession s = null;
 		
@@ -26,6 +29,8 @@ public class DSManager {
 			s = sqlSession;
 		}else if(company_code.equals("c00000002")) {
 			s = sqlSession2;
+		}else if(company_code.equals("c00000003")) {
+			s = sqlSession3;
 		}
 		
 		return s;

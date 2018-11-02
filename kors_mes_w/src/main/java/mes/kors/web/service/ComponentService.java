@@ -229,4 +229,40 @@ public class ComponentService {
 		return componentDao.commonCode37(map);
 	}
 	
+	//설치지역
+	public List<Map<String, Object>> commonCode38(Map<String, Object> map){
+		return componentDao.commonCode38(map);
+	}
+	
+	//생산구분
+	public List<Map<String, Object>> commonCode39(Map<String, Object> map){
+		return componentDao.commonCode39(map);
+	}
+
+	//주문구분
+	public List<Map<String, Object>> commonCode40(Map<String, Object> map){
+		return componentDao.commonCode40(map);
+	}
+	
+	//계약유무
+	public List<Map<String, Object>> commonCode41(Map<String, Object> map){
+		return componentDao.commonCode41(map);
+	}
+	
+	//수주구분
+	public List<Map<String, Object>> commonCode42(Map<String, Object> map){
+		return componentDao.commonCode42(map);
+	}
+	
+	//사업구분
+	public List<Map<String, Object>> commonCode43(Map<String, Object> map){
+		return componentDao.commonCode43(map);
+	}
+	
+	//결재조건
+	public List<Map<String, Object>> commonCode44(Map<String, Object> map){
+		return componentDao.commonCode44(map);
+	}
+	
+	
 }

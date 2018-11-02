@@ -15,6 +15,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
@@ -59,11 +60,19 @@ public class ApiController {
 		common2(response, list);
 	}
 	
-	//견적서 발행(을지)
+	//견적서 발행(을지) 대메뉴
 	@RequestMapping("/scb/scb10_list")
 	public void getScb10_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
 		map = common1(request, response, map);
 		List<Map<String, Object>> list = apiService.scb10_list(map);
+		common2(response, list);
+	}
+	
+	//견적서 발행(을지) 중메뉴
+	@RequestMapping("/scb/scb10_list2")
+	public void getScb10_list2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.scb10_list2(map);
 		common2(response, list);
 	}
 	
@@ -72,6 +81,14 @@ public class ApiController {
 	public void getSea02_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
 		map = common1(request, response, map);
 		List<Map<String, Object>> list = apiService.sea02_list(map);
+		common2(response, list);
+	}
+	
+	//PJT 수주내역 조회 상세
+	@RequestMapping("/sea/sea02_detail")
+	public void getSea02_detail(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.sea02_detail(map);
 		common2(response, list);
 	}
 	
@@ -163,6 +180,22 @@ public class ApiController {
 		common2(response, list);
 	}
 	
+	//월말요약보고서
+	@RequestMapping("/pdd/pdd02_list")
+	public void getPdd02_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdd02_list(map);
+		common2(response, list);
+	}
+	
+	//월말요약보고서(stock parts 발주건)
+	@RequestMapping("/pdd/pdd02_list2")
+	public void getPdd02_list2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdd02_list2(map);
+		common2(response, list);
+	}
+	
 	//자재투입 상세분석표(수주건별 분석표)
 	@RequestMapping("/pdd/pdd06_list1")
 	public void getPdd06_list1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
@@ -171,11 +204,27 @@ public class ApiController {
 		common2(response, list);
 	}
 	
+	//자재투입 상세분석표(수주건별 분석표) 상세
+	@RequestMapping("/pdd/pdd06_detail1")
+	public void getPdd06_detail1(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdd06_detail1(map);
+		common2(response, list);
+	}
+	
 	//자재투입 상세분석표(월별 분석표)
 	@RequestMapping("/pdd/pdd06_list2")
 	public void getPdd06_list2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
 		map = common1(request, response, map);
 		List<Map<String, Object>> list = apiService.pdd06_list2(map);
+		common2(response, list);
+	}
+	
+	//자재투입 상세분석표(월별 분석표)상세
+	@RequestMapping("/pdd/pdd06_detail2")
+	public void getPdd06_detail2(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.pdd06_detail2(map);
 		common2(response, list);
 	}
 	
@@ -280,6 +329,14 @@ public class ApiController {
 	public void pea03_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
 		map = common1(request, response, map);
 		List<Map<String, Object>> list = apiService.pea03_list(map);
+		common2(response, list);
+	}
+	
+	//부품재고현황조회
+	@RequestMapping("/peg/peg01_list")
+	public void peg01_list(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = apiService.peg01_list(map);
 		common2(response, list);
 	}
 	
@@ -412,5 +469,6 @@ public class ApiController {
 			}
 		}catch (Exception e) {}
 	}
+	
 	
 }

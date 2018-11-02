@@ -365,12 +365,67 @@ public class ComponentController {
 		common2(response, list);
 	}
 	
-	
 	//견적상태
 	@RequestMapping("/common/component/commonCode37")
 	public void commonCode37(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
 		map = common1(request, response, map);
 		List<Map<String, Object>> list = componentService.commonCode37(map);
+		common2(response, list);
+	}
+
+	//설치지역
+	@RequestMapping("/common/component/commonCode38")
+	public void commonCode38(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode38(map);
+		common2(response, list);
+	}
+	
+	//생산구분
+	@RequestMapping("/common/component/commonCode39")
+	public void commonCode39(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode39(map);
+		common2(response, list);
+	}
+
+	//주문구분
+	@RequestMapping("/common/component/commonCode40")
+	public void commonCode40(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode40(map);
+		common2(response, list);
+	}
+	
+	//계약유무
+	@RequestMapping("/common/component/commonCode41")
+	public void commonCode41(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode41(map);
+		common2(response, list);
+	}
+	
+	//수주구분
+	@RequestMapping("/common/component/commonCode42")
+	public void commonCode42(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode42(map);
+		common2(response, list);
+	}
+	
+	//사업구분
+	@RequestMapping("/common/component/commonCode43")
+	public void commonCode43(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode43(map);
+		common2(response, list);
+	}
+	
+	//결재조건
+	@RequestMapping("/common/component/commonCode44")
+	public void commonCode44(HttpServletRequest request, HttpServletResponse response, Map<String, Object> map) {
+		map = common1(request, response, map);
+		List<Map<String, Object>> list = componentService.commonCode44(map);
 		common2(response, list);
 	}
 	

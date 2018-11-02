@@ -1,5 +1,7 @@
 package mes.kors.web.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,14 +32,55 @@ public class ApiService {
 		return apiDao.pda12_list(map);
 	}
 
-	//견적서 발행(을지)
+	//견적서 발행(을지) 대메뉴
 	public List<Map<String, Object>> scb10_list(Map<String, Object> map){
+		/*List<Map<String, Object>> list = apiDao.scb10_list(map);
+		int tempNumber = 0; //대분류 코드
+		int tempNumber2 = 0;
+		
+		int location_i = 0;
+		
+		for(int i = 0; i<list.size(); i++) {
+			if(tempNumber < Integer.parseInt(String.valueOf(list.get(i).get("GROUP_NO")))) {
+				tempNumber = Integer.parseInt(String.valueOf(list.get(i).get("GROUP_NO")));
+				location_i = i;
+			}
+			
+			int cnt = 0; //수량 소계
+			int amount = 0; //금액 소계
+			
+			for(int j = 0; j<list.size(); j++) {
+				if(tempNumber == Integer.parseInt(String.valueOf(list.get(j).get("GROUP_NO"))) && Integer.parseInt(String.valueOf(list.get(j).get("PNLNO"))) != tempNumber2 && Integer.parseInt(String.valueOf(list.get(j).get("PNLNO"))) > 0) {
+					cnt +=  Integer.parseInt(String.valueOf(list.get(j).get("SOQTY1")));
+					amount += Integer.parseInt(String.valueOf(list.get(j).get("SOWAMT1")));
+					tempNumber2 = Integer.parseInt(String.valueOf(list.get(j).get("PNLNO")));
+				}
+			}
+
+			if(amount > 0) {
+				list.get(location_i).put("SOQTY1", cnt);
+				list.get(location_i).put("SOWAMT1", amount);
+			}
+		}
+		
+		return list;*/
+		
 		return apiDao.scb10_list(map);
+	}
+	
+	//견적서 발행(을지) 중메뉴
+	public List<Map<String, Object>> scb10_list2(Map<String, Object> map){
+		return apiDao.scb10_list2(map);
 	}
 	
 	//PJT 수주내역 조회
 	public List<Map<String, Object>> sea02_list(Map<String, Object> map){
 		return apiDao.sea02_list(map);
+	}
+	
+	//PJT 수주내역 조회 상세
+	public List<Map<String, Object>> sea02_detail(Map<String, Object> map){
+		return apiDao.sea02_detail(map);
 	}
 	
 	//PJT 수주내역 조회 (상세) 조회
@@ -90,14 +133,39 @@ public class ApiService {
 		return apiDao.pdh04_list1(map);
 	}
 	
+	//목표기초원가 발행(자재투입 계획서(을지))
+	public List<Map<String, Object>> pdh04_list2(Map<String, Object> map){
+		return apiDao.pdh04_list2(map);
+	}
+	
+	//월말요약보고서
+	public List<Map<String, Object>> pdd02_list(Map<String, Object> map){
+		return apiDao.pdd02_list(map);
+	}
+	
+	//월말요약보고서(stock parts 발주건)
+	public List<Map<String, Object>> pdd02_list2(Map<String, Object> map){
+		return apiDao.pdd02_list2(map);
+	}
+	
 	//자재투입 상세분석표(수주건별 분석표)
 	public List<Map<String, Object>> pdd06_list1(Map<String, Object> map){
 		return apiDao.pdd06_list1(map);
 	}
 	
+	//자재투입 상세분석표(수주건별 분석표) 상세
+	public List<Map<String, Object>> pdd06_detail1(Map<String, Object> map){
+		return apiDao.pdd06_detail1(map);
+	}
+	
 	//자재투입 상세분석표(월별 분석표)
 	public List<Map<String, Object>> pdd06_list2(Map<String, Object> map){
 		return apiDao.pdd06_list2(map);
+	}
+	
+	//자재투입 상세분석표(월별 분석표)상세
+	public List<Map<String, Object>> pdd06_detail2(Map<String, Object> map){
+		return apiDao.pdd06_detail2(map);
 	}
 	
 	// 월 발주현황(P/O별 발주상세내역) 조회
@@ -128,11 +196,6 @@ public class ApiService {
 	// 월 발주현황(PJT별 발주내역 총집계표) 조회
 	public List<Map<String, Object>> pdb13_list6(Map<String, Object> map){
 		return apiDao.pdb13_list6(map);
-	}
-	
-	//목표기초원가 발행(자재투입 계획서(을지))
-	public List<Map<String, Object>> pdh04_list2(Map<String, Object> map){
-		return apiDao.pdh04_list2(map);
 	}
 	
 	//일자별 자재입고 현황
@@ -168,6 +231,11 @@ public class ApiService {
 	//부품 입고대기 현황
 	public List<Map<String, Object>> pea03_list(Map<String, Object> map){
 		return apiDao.pea03_list(map);
+	}
+	
+	//부품재고현황조회
+	public List<Map<String, Object>> peg01_list(Map<String, Object> map){
+		return apiDao.peg01_list(map);
 	}
 	
 	//자재수불 집계표(월별/자재별 수불집계표)

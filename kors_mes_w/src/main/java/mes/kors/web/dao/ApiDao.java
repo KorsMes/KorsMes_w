@@ -32,16 +32,28 @@ public class ApiDao {
 		return sqlSession.selectList(ApiNamespace + ".pda12_list", map);
 	}
 
-	//견적서 발행(을지)
+	//견적서 발행(을지) 대메뉴
 	public List<Map<String, Object>> scb10_list(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
 		return sqlSession.selectList(ApiNamespace + ".scb10_list", map);
+	}
+	
+	//견적서 발행(을지) 중메뉴
+	public List<Map<String, Object>> scb10_list2(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ApiNamespace + ".scb10_list2", map);
 	}
 	
 	//PJT 수주내역 조회
 	public List<Map<String, Object>> sea02_list(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
 		return sqlSession.selectList(ApiNamespace + ".sea02_list", map);
+	}
+	
+	//PJT 수주내역 조회 상세
+	public List<Map<String, Object>> sea02_detail(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ApiNamespace + ".sea02_detail", map);
 	}
 	
 	//PJT 수주내역 조회 (상세) 조회
@@ -110,6 +122,18 @@ public class ApiDao {
 		return sqlSession.selectList(ApiNamespace + ".pdh04_list2", map);
 	}
 	
+	//월말요약보고서
+	public List<Map<String, Object>> pdd02_list(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ApiNamespace + ".pdd02_list", map);
+	}
+	
+	//월말요약보고서(stock parts 발주건)
+	public List<Map<String, Object>> pdd02_list2(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ApiNamespace + ".pdd02_list2", map);
+	}
+	
 	//자재투입 상세분석표(수주건별 분석표)
 	public List<Map<String, Object>> pdd06_list1(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
@@ -117,11 +141,23 @@ public class ApiDao {
 		return sqlSession.selectList(ApiNamespace + ".pdd06_list1_2", map);
 	}
 	
+	//자재투입 상세분석표(수주건별 분석표) 상세
+	public List<Map<String, Object>> pdd06_detail1(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ApiNamespace + ".pdd06_detail1", map);
+	}
+	
 	//자재투입 상세분석표(월별 분석표)
 	public List<Map<String, Object>> pdd06_list2(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
 		sqlSession.selectList(ApiNamespace + ".pdd06_list2_1", map);
 		return sqlSession.selectList(ApiNamespace + ".pdd06_list2_2", map);
+	}
+	
+	//자재투입 상세분석표(월별 분석표)상세
+	public List<Map<String, Object>> pdd06_detail2(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ApiNamespace + ".pdd06_detail2", map);
 	}
 	
 	// 월 발주현황(P/O별 발주상세내역) 조회
@@ -133,8 +169,7 @@ public class ApiDao {
 	// 월 발주현황(업체별 발주집계표) 생성 및 조회
 	public List<Map<String, Object>> pdb13_list2(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
-		sqlSession.selectList(ApiNamespace + ".pdb13_list2-1", map);
-		return sqlSession.selectList(ApiNamespace + ".pdb13_list2-2", map);
+		return sqlSession.selectList(ApiNamespace + ".pdb13_list2", map);
 	}
 	
 	// 월 발주현황(PJT별 발주집계표) 조회
@@ -146,8 +181,7 @@ public class ApiDao {
 	// 월 발주현황(품목별 발주 집계표) 생성 및 조회
 	public List<Map<String, Object>> pdb13_list4(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
-		sqlSession.selectList(ApiNamespace + ".pdb13_list4-1", map);
-		return sqlSession.selectList(ApiNamespace + ".pdb13_list4-2", map);
+		return sqlSession.selectList(ApiNamespace + ".pdb13_list4", map);
 	}
 	
 	// 월 발주현황(업체별 발주내역 총집계표) 조회
@@ -202,6 +236,12 @@ public class ApiDao {
 	public List<Map<String, Object>> pec12_list2(Map<String, Object> map){
 		SqlSession sqlSession = dsm.getDS(map);
 		return sqlSession.selectList(ApiNamespace + ".pec12_list2", map);
+	}
+	
+	//부품재고현황조회
+	public List<Map<String, Object>> peg01_list(Map<String, Object> map){
+		SqlSession sqlSession = dsm.getDS(map);
+		return sqlSession.selectList(ApiNamespace + ".peg01_list", map);
 	}
 	
 	//자재수불 집계표(월별/자재별 수불집계표)
