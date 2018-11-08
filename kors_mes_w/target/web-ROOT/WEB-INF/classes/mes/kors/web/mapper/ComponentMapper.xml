@@ -5,7 +5,6 @@
 	
 <mapper namespace="mes.kors.web.mapper.ComponentMapper">
 
-	
 	<!-- 품목형태 정보 조회 -->
 	<select id = "getIform" resultType="hashmap">
 		<![CDATA[
@@ -35,4 +34,548 @@
 	</select>
 	
 	
+	<!-- 제품군 정보 조회 -->
+	<select id = "getItcls" resultType="hashmap">
+		SELECT  CODE ITCLS_CD,   
+		        	NAME1 ITCLS_NM  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'N0'
+<![CDATA[		AND CODE <> '*' ]]>
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 내외자구분 정보 조회 -->
+	<select id = "getMccod" resultType="hashmap">
+		SELECT  CODE MCCOD_CD,   
+		        	NAME1 MCCOD_NM 
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'Y1'
+<![CDATA[		AND CODE <> '*' ]]>
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 품목형태 정보 조회 -->
+	<select id = "getItemtype" resultType="hashmap">
+		SELECT  CODE ITEMTYPE_CD,   
+		        	NAME1 ITEMTYPE_NM 
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'Y6'
+<![CDATA[		AND CODE <> '*' ]]>
+		AND SUBSTR(CODE,1,1) = 'A'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	
+
+    
+    <!--단위 -->
+    <select id = "commonCode1" resultType="hashmap">
+        SELECT  CODE,
+                    NAME1  
+        FROM SAA01_MST  
+        WHERE SYS_CD = 'P'  
+        AND  GROUP_CD = 'D0'
+        AND  CODE <![CDATA[ <> ]]> '*'   
+        AND  USE = 'Y'    
+        ORDER BY CODE ASC                 
+    </select>
+
+
+    <!--조달구분 -->
+    <select id = "commonCode2" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST  
+        WHERE  SYS_CD = 'P'  
+        AND  GROUP_CD = 'Y8'  
+        AND  CODE <![CDATA[ <> ]]> '*'   
+        AND  USE = 'Y'   
+        ORDER BY CODE ASC     
+    </select>
+    
+    <!--통화 -->
+    <select id = "commonCode3" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST  
+        WHERE SYS_CD = 'P'  
+        AND   GROUP_CD = 'P2'  
+        AND   CODE <![CDATA[ <> ]]> '*'   
+        AND   USE = 'Y'
+        ORDER BY CODE ASC  
+    </select>
+    
+    <!--품목형태 -->
+    <select id = "commonCode4" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE GROUP_CD = 'Y6'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND SYS_CD = 'S'
+        AND CODE <![CDATA[ < ]]> 'B' 
+        AND USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--발의자 -->
+    <select id = "commonCode5" resultType="hashmap">
+        SELECT  USER_ID, 
+                    USER_NM, 
+                    '1' STAT
+        FROM SW_USER
+        ORDER BY USER_ID
+    </select>
+    
+    <!--계정과목 -->
+    <select id = "commonCode6" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'S045'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--증빙자료 -->
+    <select id = "commonCode7" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'S047'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--부서 -->
+    <select id = "commonCode8" resultType="hashmap">
+        SELECT  SOSOK DEPT_CD,
+                    NAME DEPT_NAME
+        FROM WAA10_MST
+        WHERE SOSOK    <![CDATA[ <> ]]> '*******'
+        ORDER BY SOSOK ASC
+    </select>
+    
+    <!--사업구분 -->
+    <select id = "commonCode9" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'DP'
+        AND CODE NOT IN ('*', '00')
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--현재상태 -->
+    <select id = "commonCode10" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'Y7'
+        AND CODE NOT IN ('*', '0')
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--발주처 -->
+    <select id = "commonCode11" resultType="hashmap">
+        SELECT  BY_CD,
+                    BY_NM
+        FROM ACNT.SAA_BUYER
+        WHERE BY_CD IS NOT NULL
+    </select>
+        
+    <!--담당자 -->
+    <select id = "commonCode12" resultType="hashmap">
+        SELECT  USER_ID SABUN,   
+                    USER_NM HNAME  
+        FROM SW_USER
+        ORDER BY SABUN ASC
+    </select>
+    
+    <!--거래처 -->
+    <select id = "commonCode13" resultType="hashmap">
+        SELECT  BY_CD,
+                    BY_NM
+        FROM ACNT.SAA_BUYER
+        WHERE BY_CD IS NOT NULL
+    </select>
+        
+    <!--영업부서 -->
+    <select id = "commonCode14" resultType="hashmap">
+        SELECT  SOSOK DEPT_CD,
+                    NAME DEPT_NAME
+        FROM WAA10_MST
+        WHERE SOSOK <![CDATA[ <> ]]> '*******'
+        ORDER BY SOSOK ASC
+    </select>
+    
+    <!--영업담당 -->
+    <select id = "commonCode15" resultType="hashmap">
+        SELECT  USER_ID SABUN,   
+                    USER_NM HNAME  
+        FROM SW_USER
+        ORDER BY SABUN ASC
+    </select>
+    
+    <!--제품코드 -->
+    <select id = "commonCode16" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'N0'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--수금구분 -->
+    <select id = "commonCode17" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'YYY3'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND TAG = 'B'
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--입금구분 -->
+    <select id = "commonCode18" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'YYY3'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND TAG = 'C'
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--지급처 -->
+    <select id = "commonCode19" resultType="hashmap">
+	    SELECT  BANK_CD,   
+	            	BANK_NAME  
+	    FROM ACNT.SAB_BANKCODE
+	    ORDER BY BANK_CD ASC
+    </select>
+    
+    <!--발주형태 -->
+    <select id = "commonCode20" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD= 'P'
+        AND GROUP_CD = 'P501'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--지불방법 -->
+    <select id = "commonCode21" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD= 'P'
+        AND GROUP_CD = 'P502'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--조달구분 -->
+    <select id = "commonCode22" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'P'
+        AND GROUP_CD = 'Y8'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND  USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--내외자 -->
+    <select id = "commonCode23" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'Y1'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--품목형태 -->
+    <select id = "commonCode24" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE GROUP_CD = 'Y6'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND SYS_CD = 'S'
+        AND CODE <![CDATA[ < ]]> 'B' 
+        AND USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--제품군 -->
+    <select id = "commonCode25" resultType="hashmap">
+        SELECT  CODE,
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD = 'S'
+        AND GROUP_CD = 'N0'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND USE  = 'Y'
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--검사구분 -->
+    <select id = "commonCode26" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST  
+        WHERE  SYS_CD = 'P'  
+        AND  GROUP_CD = 'Y2' 
+        AND CODE <![CDATA[ <> ]]> '*'   
+        AND USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>     
+    
+    <!--상태 -->
+    <select id = "commonCode27" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD= 'P'
+        AND GROUP_CD = 'PE01'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND  USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--품목구분 -->
+    <select id = "commonCode28" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE GROUP_CD = 'Y6'
+        AND CODE NOT IN ('*', 'A7')
+        AND SYS_CD = 'S'
+        AND SUBSTR(CODE,1,1) = 'A'
+        AND USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--입고유형 -->
+    <select id = "commonCode29" resultType="hashmap">
+        SELECT  CODE,   
+                    NAME1  
+        FROM SAA01_MST
+        WHERE SYS_CD= 'P'
+        AND GROUP_CD = 'P602'
+        AND CODE <![CDATA[ <> ]]> '*'
+        AND SUBSTR(CODE,1,1) = 'A'
+        AND USE = 'Y'   
+        ORDER BY CODE ASC
+    </select>
+    
+    <!--상태 -->
+    <select id = "commonCode30" resultType="hashmap">
+		SELECT 	CODE,   
+         			NAME1  
+    	FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+	  	AND GROUP_CD = 'S046'
+	  	AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+    </select>
+    
+    <!-- 조치구분 -->
+    <select id = "commonCode31" resultType="hashmap">
+    	SELECT  CODE,   
+		        	NAME1  
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD= 'P'
+		AND GROUP_CD = 'P704'
+		AND CODE <![CDATA[ <> ]]>  '*'
+		AND  ( SALE."SAA01_MST"."USE" = 'Y' )  
+		ORDER BY CODE ASC
+    </select>
+    
+    <!-- 검사결과 -->
+    <select id = "commonCode32" resultType="hashmap">
+    	SELECT  CODE,   
+		    	    NAME1  
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD= 'P'
+		AND GROUP_CD = 'P706'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND  ( SALE."SAA01_MST"."USE" = 'Y' )  
+		ORDER BY CODE ASC
+    </select>
+        
+    <!-- 불량항목 -->
+    <select id = "commonCode33" resultType="hashmap">
+    	SELECT  CODE,   
+		        	NAME1  
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD= 'P'
+		AND GROUP_CD = 'P711'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND  ( SALE."SAA01_MST"."USE" = 'Y' )  
+		ORDER BY CODE ASC
+    </select>
+        
+    <!-- 검사종류 -->
+    <select id = "commonCode34" resultType="hashmap">
+    	SELECT  CODE,   
+		        	NAME1  
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD= 'P'
+		AND GROUP_CD = 'P705'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND  ( SALE."SAA01_MST"."USE" = 'Y' )  
+		ORDER BY CODE ASC
+    </select>
+        
+    <!-- 검사구분 -->
+    <select id = "commonCode35" resultType="hashmap">
+    	SELECT  CODE,   
+		        	'['||CODE||']'||NAME1   NAME1
+		FROM SALE.SAA01_MST
+		WHERE GROUP_CD = 'P119'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND SYS_CD = 'P'
+		ORDER BY CODE ASC
+    </select>    
+    
+    <!--공정  -->
+	<select id = "commonCode36" resultType="hashmap">
+		SELECT  CODE,
+			        '['||CODE||']'||NAME1 NAME1,
+			        NAME2
+		FROM SALE.SAA01_MST
+		WHERE SYS_CD = 'P'
+		AND GROUP_CD = 'Y0'
+		AND CODE <![CDATA[ <> ]]> '*'
+	</select>	
+	
+	<!-- 견적상태 -->
+	<select id = "commonCode37" resultType="hashmap">
+		SELECT  CODE,   
+		        	NAME1  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'P'
+		AND GROUP_CD = 'Z5'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 설치지역 -->
+	<select id = "commonCode38" resultType="hashmap">
+		SELECT  CODE,   
+		        	NAME1  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'E8'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 생산구분 -->
+	<select id = "commonCode39" resultType="hashmap">
+		SELECT  CODE,   
+		        	NAME1  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'YYY7'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 주문구분 -->
+	<select id = "commonCode40" resultType="hashmap">
+		SELECT  CODE,   
+		        	NAME1  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'YYY8'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 계약유무 -->
+	<select id = "commonCode41" resultType="hashmap">
+		SELECT  CODE,   
+		    	    NAME1  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'Y4'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 수주구분 -->
+	<select id = "commonCode42" resultType="hashmap">
+		SELECT  CODE,   
+		       	 	NAME1  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+		AND GROUP_CD = 'S010'
+		AND CODE <![CDATA[ <> ]]> '*'
+		AND use  = 'Y' 
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 사업구분 -->
+	<select id = "commonCode43" resultType="hashmap">
+		SELECT  CODE,   
+		       	 	NAME1  
+		FROM SAA01_MST
+		WHERE SYS_CD = 'P'
+		AND GROUP_CD = 'C0'
+		AND CODE NOT IN ('*', '00')
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
+	
+	<!-- 결재조건 -->
+	<select id = "commonCode44" resultType="hashmap">
+		SELECT 	CODE,   
+	         		NAME1  
+	    FROM SAA01_MST
+		WHERE SYS_CD = 'S'
+	    AND GROUP_CD = 'YYY3'
+		AND CODE <![CDATA[ <> ]]> '*'
+	    AND TAG = 'A'
+		AND use  = 'Y'
+		ORDER BY CODE ASC
+	</select>
 </mapper>	

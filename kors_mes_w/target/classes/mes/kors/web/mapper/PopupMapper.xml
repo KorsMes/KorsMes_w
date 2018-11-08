@@ -24,8 +24,10 @@
 				AND NVL(A.JIJIC,'%') LIKE '%'||#{jijic}||'%'
 				AND NVL(A.IFORM,'%') LIKE '%'||#{iform}||'%'
 				AND A.SEC_CASTRATE <![CDATA[ <> ]]> 'Y'
-		    	AND ROWNUM <![CDATA[ < ]]> #{page} * 30+1
 			ORDER BY ITNBR, IFORM
+			<if test="page != null and page != ''">
+				FETCH FIRST (#{page} * 30) ROWS ONLY
+			</if>
 	</select>
 	
 	
@@ -164,8 +166,7 @@
 	
 	<!-- pjt번호2 조회 -->
 	<select id = "pjtno_list2" parameterType="hashmap" resultType="hashmap">
-		SELECT 	PDTNO,
-				 	DRSEQ,
+		SELECT 	DISTINCT PDTNO,
 				 	TO_CHAR(CONF_DATE, 'YYYY-MM-DD') CONF_DATE,
 				 	TO_CHAR(SODAT, 'yyyy-mm-dd') SODAT,
 			       	SF_PJTNO_DATA(COMPANY, PLANT, SUBSTR(PDTNO,1,8), '1') PJTNO_NM,
@@ -175,7 +176,7 @@
 			AND PLANT   = #{plant_cd}
 			AND CONF_DATE IS NOT NULL
 			AND CONF_DATE BETWEEN REPLACE(substr(#{pjtno_fr}, 1, 10), '-', '') AND REPLACE(substr(#{pjtno_to}, 1, 10), '-', '')
-		ORDER BY SUBSTR(PDTNO,3,6)  DESC, DRSEQ
+		ORDER BY SUBSTR(PDTNO,3,6)  DESC
 	</select>
 	
 	
@@ -311,7 +312,9 @@
 			            </if>
 			            ) B
 			            WHERE A.JEJOS = B.BY_CD(+)
-			            AND ROWNUM <![CDATA[ < ]]> #{page} * 30+1
+			            <if test="page != null and page != ''">
+							FETCH FIRST (#{page} * 30) ROWS ONLY
+						</if>
 	</select>
 	
 </mapper>	

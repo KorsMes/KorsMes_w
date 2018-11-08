@@ -15,16 +15,37 @@
 	
 	<!-- user별 프로그램 정보 조회 -->
 	<select id="getMenuAuth" parameterType="hashmap" resultType="hashmap">
-		SELECT  USER_ID,
-			        UPPER(PGM_ID) PGM_ID,
-			        decode(substr(modify_gbn,1,1), '0', '', '1','true','') ACC_BTN_ADD,
-			        decode(substr(modify_gbn,1,1), '0', '', '1','true','') ACC_BTN_SAVE,
-			        decode(substr(modify_gbn,1,1), '0', '', '1','true','') ACC_BTN_DELETE,
-			        decode(substr(modify_gbn,1,1), '0', '', '1','true','') ACC_BTN_RETRIVE,
-			        decode(substr(modify_gbn,1,1), '0', '', '1','true','') ACC_BTN_PRINT
-		FROM SW_AUTH
-		WHERE USER_ID = #{user_id}
+		SELECT  UPPER(SW_AUTH.PGM_ID)  PGM_ID,
+			        SW_PROGRAM.PGM_NM PGM_NM,
+			        NVL(SUBSTR(SW_PROGRAM.PGM_KIND,1,1),'0')    ACC_BTN_ADD,
+			        NVL(SUBSTR(SW_PROGRAM.PGM_KIND,2,1),'0')    ACC_BTN_SAVE,
+			        NVL(SUBSTR(SW_PROGRAM.PGM_KIND,3,1),'0')    ACC_BTN_DELETE,
+			        NVL(SUBSTR(SW_PROGRAM.PGM_KIND,4,1),'0')    ACC_BTN_RETRIVE,
+			        NVL(SUBSTR(SW_PROGRAM.PGM_KIND,5,1),'0')    ACC_BTN_PRINT,
+			        SW_AUTH.DATA_YN        DATA_YN, 
+			        SW_AUTH.FAVORITE_YN    FAVORITE_YN,
+			        SW_AUTH.MODIFY_GBN    MODIFY_GBN,
+			        SW_AUTH.USER_ID        USER_ID,
+			        SW_AUTH.LOG_USER        LOG_USER,
+			        SW_AUTH.MODIFY_GBN_2
+		FROM SW_PROGRAM, SW_AUTH
+		WHERE (SW_AUTH.USER_ID = #{user_id}) 
+		AND  (SW_AUTH.PGM_ID  = SW_PROGRAM.PGM_ID )
+		ORDER BY SW_PROGRAM.PGM_ID
 	</select>
 	
+	<!-- 공통코드 : 회사정보 -->
+	<select id = "getCompanyInfo" resultType="hashmap">
+		SELECT 	COMPANY , 
+	         		COMPANY_NAME_K
+      	FROM PAA06_MST
+	</select>
+	
+	<!-- 공통코드 : 공장정보 -->
+	<select id = "getPlantInfo" resultType="hashmap">
+		SELECT 	PLANT, 
+                	PLANT_NAME_K 
+       FROM PAA07_MST
+	</select>
 	
 </mapper>	

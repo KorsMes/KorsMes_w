@@ -10,5 +10,8 @@
 	
 	<mappers>
 		<mapper resource="mes/kors/web/mapper/ApiMapper.xml"/>
+		<mapper resource="mes/kors/web/mapper/CommonMapper.xml"/>
+		<mapper resource="mes/kors/web/mapper/ComponentMapper.xml"/>
+		<mapper resource="mes/kors/web/mapper/PopupMapper.xml"/>
 	</mappers>
 </configuration>	

@@ -72,7 +72,11 @@ public class CommonController {
 	
 	
 	
-	
+	//개인정보처리방침 페이지
+	@RequestMapping("/kors/privacypolicy")
+	public String privacypolicy_page() {
+		return "privacypolicy";
+	}
 	
 	
 

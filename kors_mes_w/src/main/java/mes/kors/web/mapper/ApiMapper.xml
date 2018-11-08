@@ -30,8 +30,10 @@
 	    </if>
 		    AND  A.COMPANY = B.COMPANY
 		    AND    A.ITNBR = B.ITEM 
-		    AND ROWNUM <![CDATA[ < ]]> #{page} * 30+1
 		ORDER BY A.itnbr
+		<if test="page != null and page != ''">
+			FETCH FIRST (#{page} * 30) ROWS ONLY
+		</if>    
 	</select>
 	
 	<!-- 지출내역발행 조회 -->
@@ -1073,8 +1075,8 @@
                         AND    (    ( NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0)  <![CDATA[ <> ]]>  0) OR 
                                     ( NVL(A.ALLO_QTY,0)  <![CDATA[ <> ]]>  0)    )
                         AND    NVL(A.PR_STAT,'X')  <![CDATA[ <> ]]>  'C'
-                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ >= ]]>  (SELECT to_char(add_months(to_date(SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || '01','yyyymmdd'),-1),'yyyymm') FROM Dual)
-                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT REPLACE(#{yymm}, '-', '') || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
+                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ >= ]]>  (SELECT to_char(add_months(to_date(SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || '01','yyyymmdd'),-1),'yyyymm') || PROD.SF_CODE_TOT('P','P801','S','3') FROM Dual)
+                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
                         GROUP BY A.COMPANY, A.PLANT, 'A1'
                         UNION ALL
                         SELECT    A.COMPANY             COMPANY    ,
@@ -1097,7 +1099,7 @@
                                     ( NVL(A.ALLO_QTY,0)  <![CDATA[ <> ]]>  0)    )
                         AND    NVL(A.PR_STAT,'X')  <![CDATA[ <> ]]>  'C'
                         AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ >= ]]>  TO_CHAR(ADD_MONTHS(TO_DATE((select substr(#{yymm},0,4) || '01' from dual) || '01','YYYYMMDD'),-1),'YYYYMM')  ||  PROD.SF_CODE_TOT('P','P801','S','3')
-                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT REPLACE(#{yymm}, '-', '') || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
+                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
                         GROUP BY A.COMPANY, A.PLANT, 'B1'
                         UNION ALL
                         SELECT    A.COMPANY                 COMPANY    ,
@@ -1124,8 +1126,8 @@
                         AND    (    ( NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0)  <![CDATA[ <> ]]>  0) OR 
                                     ( NVL(A.ALLO_QTY,0)  <![CDATA[ <> ]]>  0)    )
                         AND    NVL(A.PR_STAT,'X')  <![CDATA[ <> ]]>  'C'
-                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ >= ]]>  TO_CHAR(ADD_MONTHS(TO_DATE((select substr(#{yymm},0,4) || '01' from dual) || '01','YYYYMMDD'),-1),'YYYYMM')  ||  PROD.SF_CODE_TOT('P','P801','S','3')
-                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT REPLACE(#{yymm}, '-', '') || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
+                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ >= ]]>  TO_CHAR(ADD_MONTHS(TO_DATE((select substr(#{yymm},0,4) || '01' from dual) || '01','YYYYMMDD'),-1),'YYYYMM')  ||  PROD.SF_CODE_TOT('P','P801','S','3') 
+                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
                         GROUP BY A.COMPANY, A.PLANT, 'B2'
                         UNION ALL
                         SELECT    A.COMPANY                 COMPANY    ,
@@ -1150,8 +1152,8 @@
                         AND    (    ( NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0)  <![CDATA[ <> ]]>  0) OR 
                                     ( NVL(A.ALLO_QTY,0)  <![CDATA[ <> ]]>  0)    )
                         AND    NVL(A.PR_STAT,'X')  <![CDATA[ <> ]]>  'C'
-                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ >= ]]>  (SELECT to_char(add_months(to_date(SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || '01','yyyymmdd'),-1),'yyyymm') FROM Dual)
-                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT REPLACE(#{yymm}, '-', '') || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
+                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ >= ]]>  (SELECT to_char(add_months(to_date(SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || '01','yyyymmdd'),-1),'yyyymm') || PROD.SF_CODE_TOT('P','P801','S','3') FROM Dual)
+                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
                         GROUP BY A.COMPANY, A.PLANT, 'C1'
                         UNION ALL
                         SELECT    A.COMPANY                 COMPANY    ,
@@ -1177,7 +1179,7 @@
                                     ( NVL(A.ALLO_QTY,0)  <![CDATA[ <> ]]>  0)    )
                         AND    NVL(A.PR_STAT,'X')  <![CDATA[ <> ]]>  'C'
                         AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ >= ]]>  TO_CHAR(ADD_MONTHS(TO_DATE((select substr(#{yymm},0,4) || '01' from dual) || '01','YYYYMMDD'),-1),'YYYYMM')  ||  PROD.SF_CODE_TOT('P','P801','S','3')
-                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT REPLACE(#{yymm}, '-', '') || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
+                        AND    TO_CHAR(C.PUR_DATE,'YYYYMMDD')  <![CDATA[ <= ]]>  (SELECT SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
                         GROUP BY A.COMPANY, A.PLANT, 'C2'
                         UNION ALL
                         SELECT    A.COMPANY            COMPANY    , 
@@ -1336,65 +1338,67 @@
 	<!-- 월말요약보고서(stock parts 발주건) -->
 	<select id = "pdd02_list2" parameterType="hashmap" resultType="hashmap">
 		SELECT  K.COMPANY,
-			        K.PLANT,
-			        SUM(K.PUR_AMT) PUR_AMT,
-			        SUM(K.PUR_AMT2) PUR_AMT2,
-			        SUBSTR(#{yymm},0,4) YYMMDD_FR
-		FROM (
-		        SELECT A.COMPANY,
-		        A.PLANT,
-		        NVL(SUM((NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0)) * NVL(A.PUR_PRICE,0)),0) PUR_AMT,
-		        0 PUR_AMT2
-		        FROM PROD.PDA04_DTL A,
-		        PROD.PDA04_MST C,
-		        SALE.SCA09_MST B
-		        WHERE A.COMPANY = C.COMPANY 
-		        AND A.PLANT = C.PLANT   
-		        AND A.PDTNO = C.PDTNO   
-		        AND A.DRSEQ = C.DRSEQ  
-		        AND A.PUR_NO = C.PUR_NO
-		        AND A.COMPANY = B.COMPANY 
-		        AND A.PLANT = B.PLANT   
-		        AND A.PDTNO = B.PJTNO
-		        AND SUBSTR(A.PDTNO,2,1) = 'T'
-		        AND B.ONDOM = '5'
-		        AND NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0) <![CDATA[ <> ]]> 0
-		        AND TO_CHAR(C.PUR_DATE,'YYYYMMDD') <![CDATA[ >= ]]> (SELECT to_char(add_months(to_date(SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || '01','yyyymmdd'),-1),'yyyymm') FROM Dual)
-		        AND TO_CHAR(C.PUR_DATE,'YYYYMMDD') <![CDATA[ <= ]]> (SELECT REPLACE(#{yymm}, '-', '') || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
-		        GROUP BY A.COMPANY, A.PLANT
-		        UNION ALL
-		        SELECT A.COMPANY,
-		        A.PLANT,
-		        0 PUR_AMT,
-		        NVL(SUM((NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0)) * NVL(A.PUR_PRICE,0)),0) PUR_AMT2
-		        FROM PROD.PDA04_DTL A,
-		        PROD.PDA04_MST C,
-		        SALE.SCA09_MST B
-		        WHERE A.COMPANY = C.COMPANY 
-		        AND A.PLANT = C.PLANT   
-		        AND A.PDTNO = C.PDTNO   
-		        AND A.DRSEQ = C.DRSEQ
-		        AND A.PUR_NO = C.PUR_NO
-		        AND A.COMPANY = B.COMPANY 
-		        AND A.PLANT = B.PLANT   
-		        AND A.PDTNO = B.PJTNO
-		        AND SUBSTR(A.PDTNO,2,1) = 'T'
-		        AND B.ONDOM = '5'
-		        AND NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0) <![CDATA[ <> ]]> 0
-		        AND TO_CHAR(C.PUR_DATE,'YYYYMMDD') <![CDATA[ >= ]]> (SELECT to_char(add_months(to_date(SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || '01','yyyymmdd'),-1),'yyyymm') FROM Dual)
-		        AND TO_CHAR(C.PUR_DATE,'YYYYMMDD') <![CDATA[ <= ]]> (SELECT REPLACE(#{yymm}, '-', '') || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
-		        GROUP BY A.COMPANY, A.PLANT
-		        UNION ALL
-		        SELECT    LPAD(#{company_cd},3) COMPANY,
-		        LPAD(#{plant_cd},3) PLANT,
-		        0 PUR_AMT,
-		        0 PUR_AMT2
-		        FROM DUAL
-		) K
-		WHERE K.COMPANY = #{company_cd}
-		AND K.PLANT = #{plant_cd}
-		GROUP BY K.COMPANY, K.PLANT
-		ORDER BY K.COMPANY, K.PLANT
+                    K.PLANT,
+                    nvl(SUM(K.PUR_AMT),0) PUR_AMT,
+                    nvl(SUM(K.PUR_AMT2),0) PUR_AMT2,
+                    SUBSTR(#{yymm},0,4) YYMMDD_FR
+        FROM (
+                SELECT A.COMPANY,
+                A.PLANT,
+                NVL(SUM((NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0)) * NVL(A.PUR_PRICE,0)),0) PUR_AMT,
+                0 PUR_AMT2
+                FROM PROD.PDA04_DTL A,
+                PROD.PDA04_MST C,
+                SALE.SCA09_MST B
+                WHERE A.COMPANY = C.COMPANY 
+                AND A.PLANT = C.PLANT   
+                AND A.PDTNO = C.PDTNO   
+                AND A.DRSEQ = C.DRSEQ  
+                AND A.PUR_NO = C.PUR_NO
+                AND A.COMPANY = B.COMPANY 
+                AND A.PLANT = B.PLANT   
+                AND A.PDTNO = B.PJTNO
+                AND SUBSTR(A.PDTNO,2,1) = 'T'
+                AND B.ONDOM = '5'
+                AND NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0)  <![CDATA[ <> ]]>  0
+                AND TO_CHAR(C.PUR_DATE,'YYYYMMDD') <![CDATA[ >= ]]> (SELECT to_char(add_months(to_date(SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || '01','yyyymmdd'),-1),'yyyymm') || PROD.SF_CODE_TOT('P','P801','S','3') FROM Dual)
+                AND TO_CHAR(C.PUR_DATE,'YYYYMMDD') <![CDATA[ <= ]]> (SELECT SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
+                GROUP BY A.COMPANY, A.PLANT     
+                UNION ALL
+                SELECT A.COMPANY,
+                A.PLANT,
+                0 PUR_AMT,
+                NVL(SUM((NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0)) * NVL(A.PUR_PRICE,0)),0) PUR_AMT2
+                FROM PROD.PDA04_DTL A,
+                PROD.PDA04_MST C,
+                SALE.SCA09_MST B
+                WHERE A.COMPANY = C.COMPANY 
+                AND A.PLANT = C.PLANT   
+                AND A.PDTNO = C.PDTNO   
+                AND A.DRSEQ = C.DRSEQ
+                AND A.PUR_NO = C.PUR_NO
+                AND A.COMPANY = B.COMPANY 
+                AND A.PLANT = B.PLANT   
+                AND A.PDTNO = B.PJTNO
+                AND SUBSTR(A.PDTNO,2,1) = 'T'
+                AND B.ONDOM = '5'
+                AND NVL(A.PUR_QTY,0) - NVL(A.CNCL_QTY,0) <![CDATA[ <> ]]> 0
+                AND TO_CHAR(C.PUR_DATE,'YYYYMMDD') <![CDATA[ >= ]]> TO_CHAR(ADD_MONTHS(TO_DATE(
+ (select substr(#{yymm},0,4) || '01'
+ from dual) || '01','YYYYMMDD'),-1),'YYYYMM')  ||  PROD.SF_CODE_TOT('P','P801','S','3')
+                AND TO_CHAR(C.PUR_DATE,'YYYYMMDD') <![CDATA[ <= ]]> (SELECT SUBSTR(REPLACE(#{yymm}, '-', ''),0,6) || PROD.SF_CODE_TOT('P','P801','E','3') FROM DUAL)
+                GROUP BY A.COMPANY, A.PLANT
+                UNION ALL
+                SELECT    LPAD(#{company_cd},3) COMPANY,
+                LPAD(#{plant_cd},3) PLANT,
+                0 PUR_AMT,
+                0 PUR_AMT2
+                FROM DUAL
+        ) K
+        WHERE K.COMPANY = #{company_cd}
+        AND K.PLANT = #{plant_cd}
+        GROUP BY K.COMPANY, K.PLANT
+        ORDER BY K.COMPANY, K.PLANT
 	</select>
 	
 	<!-- 자재투입 상세분석표(수주건별 분석표) 데이터 생성 -->
@@ -1439,17 +1443,17 @@
 			       TA.PJTNM, 
 			       TA.AMT_A0                                            AS AMT_A0,   
 			       nvl(TA.AMT_B0,0)                                     AS AMT_B0, 
-			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_B0,0) / TA.AMT_A0), 3)   AS AMT_B1,   
+			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_B0,0) / nvl(TA.AMT_A0,0)), 3)*100   AS AMT_B1,   
 			       nvl(TA.AMT_C0,0)                                     AS AMT_C0,  
-			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_C0,0) / TA.AMT_A0), 3)   AS AMT_C1,  
+			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_C0,0) / nvl(TA.AMT_A0,0)), 3)*100   AS AMT_C1,  
 			       nvl(TA.AMT_D0,0)                                     AS AMT_D0,  
-			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_D0,0) / TA.AMT_A0), 3)   AS AMT_D1,  
+			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_D0,0) / nvl(TA.AMT_A0,0)), 3)*100   AS AMT_D1,  
 			       nvl(TA.AMT_E0,0)                                     AS AMT_E0,  
-			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_E0,0) / TA.AMT_A0), 3)   AS AMT_E1,  
+			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_E0,0) / nvl(TA.AMT_A0,0)), 3)*100   AS AMT_E1,  
 			       nvl(TA.AMT_D0,0) + nvl(TA.AMT_E0,0)                  AS AMT_F0,  
-			       ROUND(DECODE(TA.AMT_A0,0,0,(nvl(TA.AMT_D0,0) + nvl(TA.AMT_E0,0)) / TA.AMT_A0), 3) AS AMT_F1,  
+			       ROUND(DECODE(TA.AMT_A0,0,0,(nvl(TA.AMT_D0,0) + nvl(TA.AMT_E0,0)) / TA.AMT_A0), 3)*100 AS AMT_F1,  
 			       nvl(TA.AMT_G0,0)                                     AS AMT_G0,
-			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_G0,0) / TA.AMT_A0), 3)   AS AMT_G1 
+			       ROUND(DECODE(TA.AMT_A0,0,0,nvl(TA.AMT_G0,0) / nvl(TA.AMT_A0,0)), 3)*100   AS AMT_G1 
 		FROM PROD.PDD06_VIW01 TA
 		WHERE TA.COMPANY = #{company_cd}
 		AND TA.PLANT = #{plant_cd}
@@ -1497,17 +1501,17 @@
 			       TO_CHAR(TA.SODAT,'YYYYMM') AS YYYYMM, 
 			       SUM(TA.AMT_A0) AS AMT_A0, 
 			       SUM(nvl(TA.AMT_B0,0)) AS AMT_B0, 
-			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,SUM(nvl(TA.AMT_B0,0)) / SUM(TA.AMT_A0)), 2) AS AMT_B1, 
+			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,SUM(nvl(TA.AMT_B0,0)) / SUM(nvl(TA.AMT_A0,0))), 2)*100 AS AMT_B1, 
 			       SUM(nvl(TA.AMT_C0,0)) AS AMT_C0, 
-			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,SUM(nvl(TA.AMT_C0,0)) / SUM(TA.AMT_A0)), 2) AS AMT_C1, 
+			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,SUM(nvl(TA.AMT_C0,0)) / SUM(nvl(TA.AMT_A0,0))), 2)*100 AS AMT_C1, 
 			       SUM(nvl(TA.AMT_D0,0)) AS AMT_D0, 
-			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,SUM(nvl(TA.AMT_D0,0)) / SUM(TA.AMT_A0)), 2) AS AMT_D1, 
+			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,SUM(nvl(TA.AMT_D0,0)) / SUM(nvl(TA.AMT_A0,0))), 2)*100 AS AMT_D1, 
 			       SUM(nvl(TA.AMT_E0,0)) AS AMT_E0, 
-			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,SUM(nvl(TA.AMT_E0,0)) / SUM(TA.AMT_A0)), 2) AS AMT_E1, 
+			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,SUM(nvl(TA.AMT_E0,0)) / SUM(nvl(TA.AMT_A0,0))), 2)*100 AS AMT_E1, 
 			       SUM(nvl(TA.AMT_D0,0)) + SUM(nvl(TA.AMT_E0,0)) AS AMT_F0,
-			       ROUND(DECODE(SUM(TA.AMT_A0),0,0,(SUM(nvl(TA.AMT_D0,0)) + SUM(nvl(TA.AMT_E0,0))), 2) / SUM(TA.AMT_A0)) AS AMT_F1, 
+			       ROUND(DECODE(SUM(nvl(TA.AMT_A0,0)),0,0,(SUM(nvl(TA.AMT_D0,0)) + SUM(nvl(TA.AMT_E0,0))) / SUM(nvl(TA.AMT_A0,0))),2)*100 AS AMT_F1, 
 			       SUM(nvl(TA.AMT_G0,0)) AS AMT_G0, 
-			       ROUND(DECODE(SUM(TA.AMT_A0),0,0, SUM(nvl(TA.AMT_G0,0)) / SUM(TA.AMT_A0)), 2)   AS AMT_G1
+			       ROUND(DECODE(SUM(TA.AMT_A0),0,0, SUM(nvl(TA.AMT_G0,0)) / SUM(nvl(TA.AMT_A0,0))), 2)*100 AS AMT_G1
 		FROM PROD.PDD06_VIW01 TA 
 		WHERE TA.COMPANY = #{company_cd}  
 		AND TA.PLANT = #{plant_cd} 
@@ -1915,7 +1919,7 @@
 		AND A.PLANT   = #{plant_cd}
 		AND A.STEP_STATUS = '50' 
 		<if test="date1 != null and date1 != '' and date2 != null and date2 != ''">
-			AND A.DEPS_DATE BETWEEN REPLACE(substr(#{date1}, 1, 10), '-', '') AND REPLACE(substr(#{date2}, 1, 10), '-', '')
+			AND A.DEPS_DATE BETWEEN substr(#{date1}, 1, 10) AND substr(#{date2}, 1, 10)
 		</if>
 		GROUP BY A.PDTNO, SF_PROJECT_NM(A.COMPANY, A.PLANT, A.PDTNO), B.MATMT, A.COMPANY    
 	</select>

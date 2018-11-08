@@ -36,7 +36,7 @@
 	
 	
 	
-	<!-- dataSourceSpied -->
+	<!-- (주)한성 더스트킹 개발 -->
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="${jdbc.driverClass}"/>
 		<property name="url" value="${jdbc.url}"/>
@@ -77,7 +77,7 @@
 	
 	
 	
-	<!-- dataSourceSpied2 -->
+	<!-- (주)한빛 테크놀러지 개발 -->
 	<bean id="dataSourceSpied2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="${jdbc.driverClass}"/>
 		<property name="url" value="${jdbc.url2}"/>
@@ -117,7 +117,7 @@
 	
 	
 		
-	<!-- dataSourceSpied3 -->
+	<!-- (주)한성 더스트킹 운영 -->
 	<bean id="dataSourceSpied3" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="${jdbc.driverClass}"/>
 		<property name="url" value="${jdbc.url3}"/>
@@ -148,6 +148,45 @@
 		<property name="dataSource" ref="dataSource3"></property>
 	</bean>
 	
+	
+	
+	
+	
+	<!-- /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+	
+	
+	
+		
+	<!-- (주)한빛 테크놀러지 운영 -->
+	<bean id="dataSourceSpied4" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClass}"/>
+		<property name="url" value="${jdbc.url4}"/>
+		<property name="username" value="${jdbc.username4}"/>
+		<property name="password" value="${jdbc.password4}"/>
+	</bean>
+	
+	<bean id="dataSource4" class="net.sf.log4jdbc.Log4jdbcProxyDataSource">
+		<constructor-arg ref="dataSourceSpied4" />
+		<property name="logFormatter">
+            <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+                <property name="loggingType" value="MULTI_LINE" />
+                <property name="sqlPrefix" value="SQL:::" />
+            </bean>
+        </property>
+	</bean>
+
+	<bean id="sqlSessionFactory4" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource4"/>
+		<property name="configLocation" value="WEB-INF/spring/mybatis/mybatis-config.xml"/>
+	</bean>
+	
+	<bean id="sqlSession4" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory4"/>
+	</bean>
+	
+	<bean id="transactionManager4" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource4"></property>
+	</bean>	
 	
 
 </beans>

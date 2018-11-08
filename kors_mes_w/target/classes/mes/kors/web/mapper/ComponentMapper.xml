@@ -5,11 +5,6 @@
 	
 <mapper namespace="mes.kors.web.mapper.ComponentMapper">
 
-	
-	<!-- 
-		SELECT BOX
-	 -->
-	
 	<!-- 품목형태 정보 조회 -->
 	<select id = "getIform" resultType="hashmap">
 		<![CDATA[

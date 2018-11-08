@@ -10,14 +10,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class DSManager {
 
-	@Inject
+	@Inject //(주)한성더스트킹 개발
 	SqlSession sqlSession;
 	
-	@Inject
+	@Inject //(주)한빛테크놀러지 개발
 	SqlSession sqlSession2;
 	
-	@Inject
+	@Inject //(주)한성더스트킹 운영
 	SqlSession sqlSession3;
+	
+	@Inject //(주)한빛테크놀러지 운영
+	SqlSession sqlSession4;
 	
 	public SqlSession getDS(Map<String, Object> map) {
 		SqlSession s = null;
@@ -31,6 +34,8 @@ public class DSManager {
 			s = sqlSession2;
 		}else if(company_code.equals("c00000003")) {
 			s = sqlSession3;
+		}else if(company_code.equals("c00000004")) {
+			s = sqlSession4;
 		}
 		
 		return s;

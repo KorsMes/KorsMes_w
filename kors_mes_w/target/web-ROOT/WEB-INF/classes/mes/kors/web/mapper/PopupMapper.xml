@@ -8,15 +8,14 @@
 	
 	<!-- 품목코드 정보 조회 -->
 	<select id = "itnbr_list" parameterType="hashmap" resultType="hashmap">
-		<![CDATA[
 			SELECT  COMPANY COMPANY,   
 				        ITNBR   ITNBR,   
 				        NAME    ITDSC,
 				        SPEC1   ISPEC1,
 				        UNMSR   UNMSR,
 				        JIJIC   JIJIC,
-				        (SELECT NAME1 FROM SAA01_MST WHERE CODE = A.IFORM AND SYS_CD = 'S' AND GROUP_CD = 'Y6' AND CODE <> '*' AND SUBSTR(CODE, 1,1) = 'A' AND USE = 'Y') IFORM_NM,
-				        (SELECT NAME1 FROM SAA01_MST WHERE SYS_CD = 'P' AND GROUP_CD = 'D0' AND CODE <> '*' AND USE = 'Y' AND A.UNMSR = CODE) UNMSR_NM
+				        (SELECT NAME1 FROM SAA01_MST WHERE CODE = A.IFORM AND SYS_CD = 'S' AND GROUP_CD = 'Y6' AND CODE <![CDATA[ <> ]]> '*' AND SUBSTR(CODE, 1,1) = 'A' AND USE = 'Y') IFORM_NM,
+				        (SELECT NAME1 FROM SAA01_MST WHERE SYS_CD = 'P' AND GROUP_CD = 'D0' AND CODE <![CDATA[ <> ]]> '*' AND USE = 'Y' AND A.UNMSR = CODE) UNMSR_NM
 			FROM SALE.SAB01_MST A
 			WHERE COMPANY = #{company_cd}
 				AND A.ITNBR LIKE #{itnbr}||'%'
@@ -24,9 +23,11 @@
 				AND NVL(A.SPEC1,'%') LIKE '%'||#{spec1}||'%'
 				AND NVL(A.JIJIC,'%') LIKE '%'||#{jijic}||'%'
 				AND NVL(A.IFORM,'%') LIKE '%'||#{iform}||'%'
-				AND A.SEC_CASTRATE <> 'Y'
+				AND A.SEC_CASTRATE <![CDATA[ <> ]]> 'Y'
 			ORDER BY ITNBR, IFORM
-		]]>
+			<if test="page != null and page != ''">
+				FETCH FIRST (#{page} * 30+1) ROWS ONLY
+			</if>
 	</select>
 	
 	
@@ -163,12 +164,12 @@
 	</select>
 	
 	
-	<!-- pjt번호 조회 -->
+	<!-- pjt번호2 조회 -->
 	<select id = "pjtno_list2" parameterType="hashmap" resultType="hashmap">
 		SELECT 	PDTNO,
 				 	DRSEQ,
-				 	CONF_DATE,
-				 	SODAT,
+				 	TO_CHAR(CONF_DATE, 'YYYY-MM-DD') CONF_DATE,
+				 	TO_CHAR(SODAT, 'yyyy-mm-dd') SODAT,
 			       	SF_PJTNO_DATA(COMPANY, PLANT, SUBSTR(PDTNO,1,8), '1') PJTNO_NM,
 				 	DRDSC
 		FROM PAE03_HIS
@@ -193,7 +194,7 @@
 			        A.VENDOR VENDOR_NAME, 
 			        A.PUR_STATUS,  
 			        A.DELV_PLANT,   
-			        A.DELV_DATE,   
+			        TO_CHAR(A.DELV_DATE, 'YYYY-MM-DD') DELV_DATE,   
 			        A.PLAN_YM,
 			        TO_CHAR(A.PUR_DATE, 'yyyy-mm-dd') PUR_DATE
 		FROM PDA04_MST A
@@ -204,5 +205,117 @@
 		ORDER BY A.PUR_NO DESC	
 	</select>
 	
+	
+	<!-- 공정 정보 조회 -->
+	<select id = "task_list" resultType="hashmap">
+		<![CDATA[
+			SELECT 	CODE TASK_CODE,   
+						NAME1 TASK_NAME1,
+			         	NAME2 TASK_NAME2
+			FROM SALE.SAA01_MST 
+			WHERE SYS_CD = 'P'
+				AND GROUP_CD = 'Y0'  
+				AND CODE 		<> '*'
+			ORDER BY CODE
+		]]>
+	</select>
+	
+	
+	<!-- pjt번호3 정보 조회 -->
+	<select id = "pjtno_list3" parameterType="hashmap" resultType="hashmap">
+		SELECT	DISTINCT A.PLANT,
+					 TO_CHAR(A.PDJIT, 'YYYY-MM-DD') YMD		,
+					A.PDTNO MO_NO		,
+					'1' URG_TAG	, 
+					A.STATUS MO_STATUS,
+					SF_PJTNO_DATA(A.COMPANY, 
+					A.PLANT, 
+					SUBSTR(A.PDTNO,1,8), '1') PJT_NM
+		FROM PROD.PBB02_MST	A
+		WHERE A.COMPANY = #{company_cd}
+		   	AND A.PLANT   = #{plant_cd}
+		   	AND A.STATUS >= 'E0'
+			AND A.PDTNO	IN	(	SELECT	DISTINCT MO_NO
+										FROM PHB01_MST
+										WHERE COMPANY	=	A.COMPANY
+											AND PLANT =	A.PLANT
+											<if test="ym_fr != null and ym_fr != '' and ym_to != null and ym_to != ''">
+												AND QC_DATE BETWEEN REPLACE(substr(#{ym_fr}, 1, 10), '-', '') AND REPLACE(substr(#{ym_to}, 1, 10), '-', '')
+											</if>
+											AND STATUS =	'60' )
+		ORDER BY A.PDTNO
+	</select>
+	
+	
+	<!--품목코드2 정보 조회 -->
+	<select id = "itnbr_list2" parameterType="hashmap" resultType="hashmap">
+		SELECT  A.COMPANY,
+			        A.ITNBR,
+			        A.NAME,
+			        A.SPEC1,
+			        A.JIJIC,
+			        A.PROFORMA_ITCLS,
+			        B.BY_NM,
+			        A.TUNCU,
+			        A.MCCOD,
+			        A.UNPRC,
+			        A.ITEM_TYPE,
+			        A.STOCK_UM,
+			        TO_CHAR(A.CREATE_DATE, 'yyyy-mm-dd') CREATE_DATE,
+			        A.SEC_CASTRATE
+			        FROM    
+			        ( SELECT    A.COMPANY            ,
+				                    A.ITNBR            ,
+				                    A.NAME                ,
+				                    A.IFORM            ,
+				                    A.SPEC1            ,
+				                    A.JIJIC            ,
+				                    A.PROFORMA_ITCLS         ,
+				                    A.JEJOS            ,
+				                    A.TUNCU            ,
+				                    A.MCCOD            ,
+				                    B.UNPRC            ,
+				                    A.IFORM            ITEM_TYPE,
+				                    A.UNMSR            STOCK_UM,
+				                    A.CREATE_DATE,
+				                    A.SEC_CASTRATE
+			            FROM SALE.SAB01_MST A, SALE.SAB02_MST B
+			            WHERE A.COMPANY  = #{company_cd}
+			            <if test="item_cd != null and item_cd != ''">
+			            	AND A.ITNBR LIKE #{item_cd}||'%'
+			            </if>  
+			            <if test="item_nm != null and item_nm != ''">
+			            	AND A.NAME  LIKE '%'||#{item_nm}||'%'
+			            </if>
+			            <if test="spec1 != null and spec1 != ''">
+			            	AND NVL(A.SPEC1,'%') LIKE '%'||#{spec1}||'%'
+			            </if>
+			            <if test="jijic != null and jijic != ''">
+			            	AND NVL(A.JIJIC,'%') LIKE '%'||#{jijic}||'%'
+			            </if>
+			            <if test="itcls_pro != null and itcls_pro != ''">
+			            	AND NVL(A.PROFORMA_ITCLS,'%') LIKE '%'||#{itcls_pro}||'%'
+			            </if>
+			            <if test="itemtype_cd != null and itemtype_cd != ''">
+			            	AND NVL(A.IFORM,'%') LIKE '%'||#{itemtype_cd}||'%'
+			            </if>
+			            <if test="mccod_cd != null and mccod_cd != ''">
+			            	AND NVL(A.MCCOD,'%') LIKE #{mccod_cd}||'%'
+			            </if>
+<![CDATA[			            AND A.SEC_CASTRATE <> 'Y' ]]>
+			            AND B.COMPANY = A.COMPANY
+			            AND B.ITNBR   = A.ITNBR ) A,
+			            ( SELECT BY_CD,
+			            BY_NM
+			            FROM ACNT.SAA_BUYER
+			            <if test="jejos != null and jejos != ''">
+			            	WHERE BY_NM LIKE '%'||#{jejos}||'%' 
+			            </if>
+			            ) B
+			            WHERE A.JEJOS = B.BY_CD(+)
+			            <if test="page != null and page != ''">
+							FETCH FIRST (#{page} * 30+1) ROWS ONLY
+						</if>
+	</select>
 	
 </mapper>	
